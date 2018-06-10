@@ -76,7 +76,7 @@ public class Card {
     public static int compareCards(Card card1, Card card2) { 
       //Assumes Suit takes precedence over Rank
       //and Suit low to hi is clubs, diamonds, 
-        //hearts, spades
+        //hearts, spades (Bridge Style)
         if (card1.getSuit() > card2.getSuit()) 
             {return 1;}
         if (card1.getSuit() < card2.getSuit()) 
@@ -103,6 +103,10 @@ public class Card {
         return cardScore;
     } 
 
+    /**
+     * This is only place where RANKS[] and SUITS[] 
+     * arrays are used
+     */
     @Override
     public String toString() {
         String s = RANKS[this.rank] + " of " + 
@@ -115,4 +119,4 @@ public class Card {
         System.out.println(card);
     }
 
-}//End abstract class Card
+}//End class Card
