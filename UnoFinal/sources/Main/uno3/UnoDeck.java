@@ -52,7 +52,7 @@ public class UnoDeck extends CardDeck implements Serializable {
         this.label = label;
         unocards = new ArrayList<UnoCard>();
 
-        cardDeckBuilder(24, 3);
+        cardDeckBuilder(0,24,0,3);
         
         /**
          * Here is where wild cards and DrawFour are added
@@ -68,9 +68,10 @@ public class UnoDeck extends CardDeck implements Serializable {
      * and therefor cannot be instantiated
      * @see uno3.CardDeck#cardDeckBuilder(int, int)
      */
-    protected void cardDeckBuilder(int rankMax, int colorMax) {
-        for (int color = 0; color <= colorMax; color++) {
-            for (int rank = 0; rank <= rankMax; rank++) {
+    protected void cardDeckBuilder(int rankMin, int rankMax, 
+            int colorMin, int colorMax) {
+        for (int color = colorMin; color <= colorMax; color++) {
+            for (int rank = rankMin; rank <= rankMax; rank++) {
                 addCard(new UnoCard(color, rank));
             }
         }

@@ -27,14 +27,16 @@ public abstract class CardDeck implements Serializable{
         this.cards = new ArrayList<Card>();
         
 //      CardDeck Builder....  
-//        for(int suit = 0; suit < 4; suit++ ) {
-//            for(int rank = 0; rank < 13; rank++) {
-//                addCard(new Card(rank, suit));
-//            }
-//        }
+
     }
 
-   protected abstract void cardDeckBuilder(int rank, int suit); 
+   protected abstract void cardDeckBuilder(int rankMin, int rankMax,
+           int suitMin, int suitMax);
+// for(int suit = suitMin; suit < suitMax; suit++ ) {
+// for(int rank = rankMin; rank < rankMax; rank++) {
+//     addCard(new Card(rank, suit));
+// }
+//}
     
     /**Used in reshuffle of discardPile when 
         * discardPile becomes drawPile. 

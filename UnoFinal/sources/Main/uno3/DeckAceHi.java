@@ -21,7 +21,7 @@ public class DeckAceHi extends CardDeck {
     private static final long serialVersionUID = 1L;
     private ArrayList<CardAceHi> cardSAceHi;
     private String label;
-    private static String fileName = new String("deckacehi.ser");
+    private static String fileName = new String("deckAceHi.ser");
     
     public ArrayList<CardAceHi> getCardSAceHi() {
         return cardSAceHi;
@@ -51,7 +51,7 @@ public class DeckAceHi extends CardDeck {
             ArrayList<CardAceHi> cardSAceHi) {
         this.label = label;
         this.cardSAceHi = cardSAceHi;
-    }
+    }// End hand Constructor
     
     /**
      * @param label
@@ -60,16 +60,17 @@ public class DeckAceHi extends CardDeck {
         this.label = label;
         cardSAceHi = new ArrayList<CardAceHi>();
 
-        cardDeckBuilder(14, 3);
-    }
+        cardDeckBuilder(2,14,0,3);
+    }// End Constructor
 
     /* (non-Javadoc)
      * @see Main.uno3.CardDeck#cardDeckBuilder(int, int)
      */
     @Override
-    protected void cardDeckBuilder(int rankMax, int suitMax) {
-        for(int suit = 0; suit <= suitMax; suit++ ) {
-            for(int rank = 2; rank <= rankMax; rank++) {
+    protected void cardDeckBuilder(int rankMin, int rankMax,
+            int suitMin, int suitMax) {
+        for(int suit = suitMin; suit <= suitMax; suit++ ) {
+            for(int rank = rankMin; rank <= rankMax; rank++) {
                 addCard(new CardAceHi(rank, suit));
             }
         }
