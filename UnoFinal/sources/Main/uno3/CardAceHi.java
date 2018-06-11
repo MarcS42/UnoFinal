@@ -5,12 +5,21 @@ package Main.uno3;
 
 /**
  * @author MarcSherman
- *
+ * Little polymorphism or code reuse from class Card
+ *  because a) most Card methods are static => cannot
+ *  Override, and b) since AceHi RANKS[] is different,
+ *  need to copy and change Card class code.
+ *  SubClassing AceHi to Card May be more trouble than it's worth. 
  */
 public class CardAceHi extends Card {
 
+    /**
+     *So you can save Deck later for debugging. 
+     */
+    private static final long serialVersionUID = 1L;
+    
     private static final String[] RANKS = 
-        {"null","null","2","3","4","5",
+        {null,null,"2","3","4","5",
           "6","7","8","9","10",
           "Jack","Queen","King","Ace"};
     
@@ -51,7 +60,7 @@ public class CardAceHi extends Card {
     }        
     
         /**
-         * Doesn't care about suit in Compare
+         * Doesn't care about suit in this Compare
          * 
          * Positive number means c1 > c2
          * @param card1
@@ -71,10 +80,59 @@ public class CardAceHi extends Card {
             
             return 0;
         }//End compareCards(card1,card2)
+ 
+        /**Determines if card2 matches/can be played vs card1 
+         * using ShitHead type rules
+         *  
+         * @param card1 Prev. card you are trying to match.
+         * @param card2 Card card played that is potential match.
+         * @return
+         */
+        public static boolean cardsMatch(CardAceHi card1, 
+                CardAceHi card2) { 
+            //card1 = previous card
+            if (card1.getRank() <= card2.getRank()) {
+                    return true;
+                     }
+            return false;
+        }
+        
+        /**Determines if card1.rank matches card2.rank. 
+         * Needed for tracking consecutive Cards played 
+         *  
+         * @param card1 first Card played whose rank might
+         *  match card2
+         * @param card2 second Card played whose rank might
+         *  match card1
+         * @return
+         */
+        public static boolean ranksMatch(CardAceHi card1, 
+                CardAceHi card2) { 
+            //card2 = second card
+            if (card1.getRank() == card2.getRank()) {
+                    return true;
+                     }
+            return false;
+        }
     
         /**
+         * Card level scoring by AceHi game rules
+         * Called from Hand
+         * @param card
+         * @return
+         */
+        public static int scoreCard(CardAceHi card) {
+            if(card.getRank() >= 2) { 
+            return card.getRank();
+            }
+            return 0;
+        }
+        
+        
+        /**
          * This is only place where RANKS[] and SUITS[] 
-         * arrays are used
+         * arrays are used.
+         * Override because AceHi RANKS[] <> Card RANKS[].
          */
         @Override
         public String toString() {
