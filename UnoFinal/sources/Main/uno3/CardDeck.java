@@ -11,6 +11,7 @@ public abstract class CardDeck implements Serializable{
      * 
      */
     private static final long serialVersionUID = 1L;
+    
     private String label;
     private ArrayList<Card> cards;
 
@@ -26,11 +27,11 @@ public abstract class CardDeck implements Serializable{
         this.cards = new ArrayList<Card>();
         
 //      CardDeck Builder....  
-        for(int suit = 0; suit < 4; suit++ ) {
-            for(int rank = 0; rank < 13; rank++) {
-                addCard(new Card(rank, suit));
-            }
-        }
+//        for(int suit = 0; suit < 4; suit++ ) {
+//            for(int rank = 0; rank < 13; rank++) {
+//                addCard(new Card(rank, suit));
+//            }
+//        }
     }
 
    protected abstract void cardDeckBuilder(int rank, int suit); 
