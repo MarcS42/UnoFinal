@@ -76,4 +76,51 @@ public class DeckAceHi extends CardDeck {
         }
     }//End cardDeckbuilder
 
+    /**
+     * @param deck
+     * @return
+     */
+    public static DeckAceHi cloneDeck(DeckAceHi deck) {
+        ArrayList<CardAceHi> deckCopy = new ArrayList<>();
+        DeckAceHi deckClone = new DeckAceHi("DeckCopy", deckCopy);
+        for(CardAceHi d:deck.getCardSAceHi()) {
+            deckClone.getCardSAceHi().add(d);
+        }
+        serializeDeckAceHi(deckClone);
+        return deckClone;
+    }
+
+    public static void serializeDeckAceHi(DeckAceHi deck) {
+        fileName= getFileName();
+
+        try (ObjectOutputStream oos = 
+                new ObjectOutputStream(new FileOutputStream(fileName))) {
+
+            oos.writeObject(deck);
+            System.out.println("CloneDeck Done");
+            System.out.println("");
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    public static DeckAceHi deserializeDeckAceHi() {
+        String filename = getFileName();
+
+        DeckAceHi deck = null;
+
+        try (ObjectInputStream ois 
+                = new ObjectInputStream(new FileInputStream(filename))) {
+
+            deck = (DeckAceHi) ois.readObject();
+            System.out.println("Deserializatoin Done");
+            System.out.println("");
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return deck;
+    }
 }
