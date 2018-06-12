@@ -74,7 +74,6 @@ public class DeckAceHi extends CardDeck {
                 addCard(new CardAceHi(rank, suit));
             }
         }
-
     }//End cardDeckbuilder
 
 }

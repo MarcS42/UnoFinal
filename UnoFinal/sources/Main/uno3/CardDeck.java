@@ -15,6 +15,14 @@ public abstract class CardDeck implements Serializable{
     private String label;
     private ArrayList<Card> cards;
 
+    public ArrayList<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(ArrayList<Card> cards) {
+        this.cards = cards;
+    }
+
     public String getLabel() {
         return label;
     }
@@ -33,12 +41,28 @@ public abstract class CardDeck implements Serializable{
    protected abstract void cardDeckBuilder(int rankMin, int rankMax,
            int suitMin, int suitMax);
 // for(int suit = suitMin; suit < suitMax; suit++ ) {
-// for(int rank = rankMin; rank < rankMax; rank++) {
-//     addCard(new Card(rank, suit));
+//    for(int rank = rankMin; rank < rankMax; rank++) {
+//        addCard(new Card(rank, suit));
 // }
 //}
     
-    /**Used in reshuffle of discardPile when 
+   /**
+    * Abstract because Class is abstract/cannot
+    *  be instantiated.
+   * @param deck Deck to be saved/cloned
+   * @return 
+   */
+//  protected abstract CardDeck cloneDeck(CardDeck deck);
+//      ArrayList<Card> deckCopy = new ArrayList<>();
+//      CardDeck deckClone = new CardDeck("DeckCopy", deckCopy);
+//      for(Card d:deck.getCards()) {
+//          deckClone.getCards().add(d);
+//      }
+//      serializeUnoDeck(deckClone);
+//      return deckClone;
+//  }
+   
+   /**Used in reshuffle of discardPile when 
         * discardPile becomes drawPile. 
         * These 'Piles' are UnoHands
      * 
