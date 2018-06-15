@@ -4,7 +4,7 @@
 package Main.uno3;
 
 import static Main.uno3.Card.isAceHi;
-import static Main.uno3.CardDeck.printDeck;
+import static Main.uno3.CardDeck.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -24,7 +24,9 @@ class CardDeckTest {
         printDeck(deckAceLo); 
         System.out.println("");
         
+        
         deckAceLo.shuffle();
+        cloneDeck(deckAceLo);
         
         System.out.println("Test deckTest2 Shuffled AceLo: " + isAceHi());
         printDeck(deckAceLo); 

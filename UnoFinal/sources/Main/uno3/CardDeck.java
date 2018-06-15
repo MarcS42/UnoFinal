@@ -1,6 +1,10 @@
 package Main.uno3;
 
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
@@ -15,23 +19,31 @@ public class CardDeck implements Serializable{
     
     private String label;
     private ArrayList<Card> cards;
+    private static String fileName = new String("savedDeck.ser");
 
     public CardDeck() {
     }
+    
+    /**Constructor used for Hand
+     * @param label
+     * @param cards
+     */
+    public CardDeck(String label, 
+            ArrayList<Card> cards) {
+        this.label = label;
+        this.cards = cards;
+    }// End hand Constructor
     
     public CardDeck(String label, boolean AceHi) {
         this.label=label;
         this.cards = new ArrayList<Card>();
         setAceHi(AceHi);
         if(isAceHi()) {
+//        CardDeck Builder....
             cardDeckBuilder(2, 14, 0, 3);
         } else {
             cardDeckBuilder(1, 13, 0, 3);
         }
-        
-//      CardDeck Builder....
-        
-
     }
 
     public void cardDeckBuilder(int rankMin, int rankMax,
@@ -43,24 +55,57 @@ public class CardDeck implements Serializable{
         }
     }
     
-   /**
-    * Didn't Work Out
-    * Abstract because Class is abstract/cannot
-    *  be instantiated.
+  /**
+   *Used for debugging to replay preceding CardDeck
    * @param deck Deck to be saved/cloned
    * @return 
    */
-//  protected abstract CardDeck cloneDeck(CardDeck deck);
-//      ArrayList<Card> deckCopy = new ArrayList<>();
-//      CardDeck deckClone = new CardDeck("DeckCopy", deckCopy);
-//      for(Card d:deck.getCards()) {
-//          deckClone.getCards().add(d);
-//      }
-//      serializeUnoDeck(deckClone);
-//      return deckClone;
-//  }
-   
-   
+    public static CardDeck cloneDeck(CardDeck deck) {
+        ArrayList<Card> deckCopy = new ArrayList<>();
+        CardDeck deckClone = new CardDeck("DeckCopy", deckCopy);
+        for(Card d:deck.getCards()) {
+            deckClone.getCards().add(d);
+        }
+        serializeCardDeck(deckClone);
+        return deckClone;
+    }
+  
+  public static void serializeCardDeck(CardDeck deck) {
+      fileName = getFileName();
+
+      try (ObjectOutputStream oos = 
+              new ObjectOutputStream(new FileOutputStream(fileName))) {
+
+          oos.writeObject(deck);
+          System.out.println("CloneDeck Done");
+          System.out.println("");
+
+      } catch (Exception ex) {
+          ex.printStackTrace();
+      }
+  }
+
+  /**
+ * @return CardDeck from savedFile.ser
+ */
+public static CardDeck deserializeCardDeck() {
+      String filename = getFileName();
+
+      CardDeck deck = null;
+
+      try (ObjectInputStream ois 
+              = new ObjectInputStream(new FileInputStream(filename))) {
+
+          deck = (CardDeck) ois.readObject();
+          System.out.println("Deserializatoin Done");
+          System.out.println("");
+
+      } catch (Exception ex) {
+          ex.printStackTrace();
+      }
+      return deck;
+  }
+     
    @Override
    public String toString() {
        return getLabel() + ":" + cards.toString();
@@ -163,5 +208,9 @@ public class CardDeck implements Serializable{
 
     public String getLabel() {
         return label;
+    }
+
+    public static String getFileName() {
+        return fileName;
     }
 }
