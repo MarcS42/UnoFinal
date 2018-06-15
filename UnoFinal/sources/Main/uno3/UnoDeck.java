@@ -68,7 +68,7 @@ public class UnoDeck extends CardDeck implements Serializable {
      * and therefor cannot be instantiated
      * @see uno3.CardDeck#cardDeckBuilder(int, int)
      */
-    protected void cardDeckBuilder(int rankMin, int rankMax, 
+    public void cardDeckBuilder(int rankMin, int rankMax, 
             int colorMin, int colorMax) {
         for (int color = colorMin; color <= colorMax; color++) {
             for (int rank = rankMin; rank <= rankMax; rank++) {

@@ -23,19 +23,11 @@ public class DeckAceHi extends CardDeck {
     private String label;
     private static String fileName = new String("deckAceHi.ser");
     
-    public ArrayList<CardAceHi> getCardSAceHi() {
-        return cardSAceHi;
-    }
-    
     @Override
     public String getLabel() {
         return label;
     }
     
-    public static String getFileName() {
-        return fileName;
-    }
-
     /**
      * 
      */
@@ -67,7 +59,7 @@ public class DeckAceHi extends CardDeck {
      * @see Main.uno3.CardDeck#cardDeckBuilder(int, int)
      */
     @Override
-    protected void cardDeckBuilder(int rankMin, int rankMax,
+    public void cardDeckBuilder(int rankMin, int rankMax,
             int suitMin, int suitMax) {
         for(int suit = suitMin; suit <= suitMax; suit++ ) {
             for(int rank = rankMin; rank <= rankMax; rank++) {
@@ -77,8 +69,8 @@ public class DeckAceHi extends CardDeck {
     }//End cardDeckbuilder
 
     /**
-     * @param deck
-     * @return
+     * @param deck - DeckAceHi
+     * @return deckClone
      */
     public static DeckAceHi cloneDeck(DeckAceHi deck) {
         ArrayList<CardAceHi> deckCopy = new ArrayList<>();
@@ -122,5 +114,33 @@ public class DeckAceHi extends CardDeck {
             ex.printStackTrace();
         }
         return deck;
+    }
+    
+public static void printDeck(ArrayList<CardAceHi> cardSAceHi) {
+        
+        for(CardAceHi card:cardSAceHi) {
+            System.out.println(card);
+        }
+    }
+
+@Override
+public String toString() {
+    return getLabel() + ":" + cardSAceHi.toString();
+}
+    
+    /**Helper/Utility method.
+     * Used in many methods
+  * @param card card to be added to end of hand AL
+  */
+ public void addCard(Card card) {
+     cardSAceHi.add((CardAceHi) card);
+    }
+
+    public ArrayList<CardAceHi> getCardSAceHi() {
+        return cardSAceHi;
+    }
+
+    public static String getFileName() {
+        return fileName;
     }
 }

@@ -55,8 +55,8 @@ public class CardAceHi extends Card {
     public CardAceHi(int rank, int suit) {
         super(rank, suit);
         this.rank = rank;
-        System.out.println("Created in 2-args"
-                + " AceHi "+ rank +" "+ getSuit());
+//        System.out.println("Created in 2-args"
+//                + " AceHi "+ rank +" "+ getSuit());
     }        
     
         /**
@@ -137,7 +137,7 @@ public class CardAceHi extends Card {
         @Override
         public String toString() {
             String s = RANKS[this.rank] + " of " + 
-                             getSuits()[this.getSuit()];
+                             getSUITS()[this.getSuit()];
             return s;
         }
         

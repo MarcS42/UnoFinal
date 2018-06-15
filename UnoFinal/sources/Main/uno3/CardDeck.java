@@ -4,8 +4,9 @@ package Main.uno3;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
+import static Main.uno3.Card.*;
 
-public abstract class CardDeck implements Serializable{
+public class CardDeck implements Serializable{
 
     /**
      * 
@@ -15,38 +16,35 @@ public abstract class CardDeck implements Serializable{
     private String label;
     private ArrayList<Card> cards;
 
-    public ArrayList<Card> getCards() {
-        return cards;
-    }
-
-    public void setCards(ArrayList<Card> cards) {
-        this.cards = cards;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
     public CardDeck() {
     }
     
-    public CardDeck(String label) {
+    public CardDeck(String label, boolean AceHi) {
         this.label=label;
         this.cards = new ArrayList<Card>();
+        setAceHi(AceHi);
+        if(isAceHi()) {
+            cardDeckBuilder(2, 14, 0, 3);
+        } else {
+            cardDeckBuilder(1, 13, 0, 3);
+        }
         
-//      CardDeck Builder....  
+//      CardDeck Builder....
+        
 
     }
 
-   protected abstract void cardDeckBuilder(int rankMin, int rankMax,
-           int suitMin, int suitMax);
-// for(int suit = suitMin; suit < suitMax; suit++ ) {
-//    for(int rank = rankMin; rank < rankMax; rank++) {
-//        addCard(new Card(rank, suit));
-// }
-//}
+    public void cardDeckBuilder(int rankMin, int rankMax,
+            int suitMin, int suitMax) {
+        for(int suit = suitMin; suit <= suitMax; suit++ ) {
+            for(int rank = rankMin; rank <= rankMax; rank++) {
+                addCard(new Card(rank, suit, isAceHi()));
+            }
+        }
+    }
     
    /**
+    * Didn't Work Out
     * Abstract because Class is abstract/cannot
     *  be instantiated.
    * @param deck Deck to be saved/cloned
@@ -62,6 +60,20 @@ public abstract class CardDeck implements Serializable{
 //      return deckClone;
 //  }
    
+   
+   @Override
+   public String toString() {
+       return getLabel() + ":" + cards.toString();
+   }
+   
+   public static void printDeck(CardDeck deck) {
+       for(Card card:deck.getCards()) {
+           System.out.printf("%-17s"+" ", card);
+           System.out.printf("%3d%n", scoreCard(card));
+       }
+   System.out.println();
+   }
+
    /**Used in reshuffle of discardPile when 
         * discardPile becomes drawPile. 
         * These 'Piles' are UnoHands
@@ -126,5 +138,30 @@ public abstract class CardDeck implements Serializable{
      */
     public int size() {
         return cards.size();
+    }
+    
+    /*
+     * Used in Uno takeTurn() gets last card from calling CardCollection, but
+     * doesn't remove it So it is like taking a look at the card
+     */
+    public Card last() {
+        int i = size() - 1;
+        return getCard(i);
+    }
+
+    public ArrayList<Card> getCards() {
+        return cards;
+    }
+
+    /**
+     * Maybe used in running saved deck
+     * @param cards
+     */
+    public void setCards(ArrayList<Card> cards) {
+        this.cards = cards;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }
