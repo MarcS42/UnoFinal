@@ -127,7 +127,7 @@ public class Card implements Serializable {
         return 0;
     }//End compareCards(card1,card2)
 
-    /**
+    /**Suit does not matter
      * Positive number means c1 <= c2
      * @param card1
      * @param card2
