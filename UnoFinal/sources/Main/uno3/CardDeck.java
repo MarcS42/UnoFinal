@@ -118,7 +118,28 @@ public static CardDeck deserializeCardDeck() {
        }
    System.out.println();
    }
-
+   /** Deal(that,n) Removes n cards from 
+    * this.CardDeck, and
+    *  adds n cards to that.UnoHand
+    *  */
+   public void deal(CardHand that, int n) {
+       for (int i=0; i < n; i++) {
+           Card card = popCard();
+           that.addCard(card);
+       }
+   }
+   
+   /**Used in SH Class Constructor 
+    * (drawPile)
+    * moves all remaining cards to that 
+    * given CardHand
+    * 
+    **/
+   public void dealAll(CardHand that) {
+       int n = size();
+       deal(that, n);
+   }
+   
    /**Used in reshuffle of discardPile when 
         * discardPile becomes drawPile. 
         * These 'Piles' are UnoHands
@@ -145,8 +166,8 @@ public static CardDeck deserializeCardDeck() {
        }
 
     /**Used in draw, deal(Hand, int), and 
-     *      Uno Constructor.
-     * "Overloaded" 
+     *      SH Constructor.
+     *  
      * Removes top card, no need to shift left
      * @return top/last card
      */
@@ -170,6 +191,15 @@ public static CardDeck deserializeCardDeck() {
         return cards.get(i);
     }
 
+    /**
+     * Checks if CardDeck AL is empty
+     * Used with CardHand.
+     * @return true if hand is empty
+     */
+    public boolean empty() {
+        return getCards().isEmpty();
+    }
+    
     /**Helper/Utility method.
         * Used in many methods
      * @param card card to be added to end of hand AL

@@ -4,7 +4,7 @@ package Main.uno3;
 
 import java.util.Random;
 
-public class UnoSpecialCardsV2 {
+public class UnoSpecialCards {
         private static boolean specialCard;
         private static boolean skip;
         private static boolean reverse;
@@ -129,6 +129,6 @@ public class UnoSpecialCardsV2 {
             }
             return wildDrawFour;
         }
-} // end UnoSpecialCardsV2 Class
+} // end UnoSpecialCards Class
 
 

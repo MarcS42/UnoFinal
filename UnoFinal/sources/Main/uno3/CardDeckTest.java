@@ -31,6 +31,13 @@ class CardDeckTest {
         System.out.println("Test deckTest2 Shuffled AceLo: " + isAceHi());
         printDeck(deckAceLo); 
         System.out.println("");
+        
+        CardDeck replayDeckLo=deserializeCardDeck();
+        
+        System.out.println("Test deserialize replayDeckLo: " + isAceHi());
+        printDeck(replayDeckLo); 
+        System.out.println("");
+        
     }
     
     /**

@@ -3,7 +3,7 @@ package Main.uno3;
 
 import java.util.Scanner;
 
-import static Main.uno3.UnoSpecialCardsV2.*;
+import static Main.uno3.UnoSpecialCards.*;
 
 import java.util.ArrayList;
 

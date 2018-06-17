@@ -3,7 +3,7 @@ package Main.uno3;
 
 import java.util.ArrayList;
 
-import static Main.uno3.UnoSpecialCardsV2.*;
+import static Main.uno3.UnoSpecialCards.*;
 
 /**Class Player encapsulates player strategy for Uno,
  * While class Uno creates and maintains the state of the game.

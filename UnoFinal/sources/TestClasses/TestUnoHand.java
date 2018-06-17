@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import Main.uno3.UnoCard;
 import Main.uno3.UnoDeck;
 import Main.uno3.UnoHand;
-import static Main.uno3.UnoSpecialCardsV2.*;
+import static Main.uno3.UnoSpecialCards.*;
 
 public class TestUnoHand {
     

@@ -3,7 +3,7 @@ package Main.uno3;
 
 import java.io.Serializable;
 
-import static Main.uno3.UnoSpecialCardsV2.*;
+import static Main.uno3.UnoSpecialCards.*;
 
 public class UnoCard extends Card implements Serializable{
     
