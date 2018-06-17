@@ -1,6 +1,6 @@
 package Main.uno3;
 
-public class SpecialCards {
+public class SpecialCardsSH {
     
     private static boolean specialCard;
     private static boolean twoReset;
