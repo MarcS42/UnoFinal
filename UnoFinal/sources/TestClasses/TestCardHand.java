@@ -13,19 +13,19 @@ public class TestCardHand {
     public TestCardHand() {
         CardDeck deck = new CardDeck("CardHand Test", true);
 
-        for (Card card : deck.getCards()) {
-            System.out.printf("%-16s", card);
+//        for (Card card : deck.getCards()) {
+//            System.out.printf("%-16s", card);
 //            System.out.printf("%5s%n", unoCardWildDrawFour(unocard));
-            System.out.println("");
-        }
-        System.out.println();
-        deck.shuffle();
-
-        for (Card card : deck.getCards()) {
-            System.out.printf("%-16s", card);
+//            System.out.println("");
+//        }
+//        System.out.println();
+//        deck.shuffle();
+//
+//        for (Card card : deck.getCards()) {
+//            System.out.printf("%-16s", card);
 //            System.out.printf("%5s%n", unoCardWildDrawFour(unocard));
-            System.out.println("");
-        }
+//       }
+        
         System.out.println("-----CardHand Tests-------");
 
         CardHand player1;
@@ -38,7 +38,9 @@ public class TestCardHand {
 
         deck.deal(player1, 7);
         player1.display();
+        System.out.println("Test insertionSortCardHand(player)");
         insertionSortCardHand(player1);
+        player1.display();
         System.out.println("P1 UnoHand Score " + CardHand.scoreCardHand(player1));
         System.out.println("");
 
@@ -52,6 +54,10 @@ public class TestCardHand {
 
         deck.deal(player2, 7);
         player2.display();
+        System.out.println("Test insertionSortCardHand(player)");
+        insertionSortCardHand(player2);
+        player2.display();
+        
         System.out.println("P2 UnoHand Score " + CardHand.scoreCardHand(player2));
         System.out.println("");
 
@@ -65,6 +71,10 @@ public class TestCardHand {
 
         deck.deal(player3, 7);
         player3.display();
+        System.out.println("Test insertionSortCardHand(player)");
+        insertionSortCardHand(player3);
+        player3.display();
+        
         System.out.println("P3 UnoHand Score " + CardHand.scoreCardHand(player3));
         System.out.println("");
 
