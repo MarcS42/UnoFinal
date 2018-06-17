@@ -72,8 +72,10 @@ public class Card implements Serializable {
 
     /**Determines if card2 playable after card1 independent of
      *  Suits.
-     *   'Playable' means "> than or = to" 
+     *   'Playable' means "> than or = to"
+     *    
      *  This is for games like Shithead
+     *  
      * @param card1 Prev. card you are trying to play on
      * @param card2 Card that is potentially playable
      * @return

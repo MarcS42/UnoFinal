@@ -2,7 +2,7 @@ package Main.uno3;
 
 public class SpecialCardsSH {
     
-    private static boolean specialCard;
+    private static boolean specialCardSH;
     private static boolean twoReset;
     private static boolean threeMirror;
     private static boolean tenBomb;
@@ -13,13 +13,13 @@ public class SpecialCardsSH {
     * @param card
     * @return true if Rank == 2, 3, 7, or 10.
     */
-   public static boolean SpecialCard(Card card) {
-       specialCard = false;
+   public static boolean specialCardSH(Card card) {
+       specialCardSH = false;
        int rank = card.getRank();
        if(rank == 2 || rank == 3 || rank == 10 || rank == 7) {
-           specialCard = true;
+           specialCardSH = true;
        }
-       return specialCard;
+       return specialCardSH;
    }
    
    public static boolean twoReset(Card card) {
@@ -60,7 +60,7 @@ public class SpecialCardsSH {
  */
 public static boolean fourOfaKindBomb(Card card) {
        fourOfaKindBomb = false;
-       if(fourOfaKind == true) {
+       if(ShitHead.isFourOfaKind() == true) {
            return true;
        }
        return fourOfaKindBomb;
