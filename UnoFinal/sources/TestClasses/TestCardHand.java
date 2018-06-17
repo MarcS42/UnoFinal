@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import Main.uno3.Card;
 import Main.uno3.CardDeck;
 import Main.uno3.CardHand;
+import static Main.uno3.CardHand.*;
 //import static Main.uno3.specialCardsV2.*;
 
 public class TestCardHand {
@@ -37,6 +38,7 @@ public class TestCardHand {
 
         deck.deal(player1, 7);
         player1.display();
+        insertionSortCardHand(player1);
         System.out.println("P1 UnoHand Score " + CardHand.scoreCardHand(player1));
         System.out.println("");
 
