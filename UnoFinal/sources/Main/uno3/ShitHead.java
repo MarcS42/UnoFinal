@@ -15,6 +15,8 @@ public class ShitHead {
     private PlayerSH player;
     private static boolean fourOfaKind;
     private CardHand drawPile;
+    private CardHand bomb;
+    private CardHand discardPile;
     
     /**In SH only draw if 
      * 1) you played a card; 

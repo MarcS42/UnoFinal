@@ -47,9 +47,9 @@ public class PlayerSH {
      * Searches current Player's hand(s) for match to
      *  Card prev.
      * Three hands to search:
-     * 1) handCards - 7
-     * 2) riverCards - choice of 3
-     * 3) holeCards - random guess
+     * 1) hand Cards - 7
+     * 2) river Cards - choice of <= 3
+     * 3) hole Cards - random guess <= 3
      * @param prev card
      * @return match from hand
      */
