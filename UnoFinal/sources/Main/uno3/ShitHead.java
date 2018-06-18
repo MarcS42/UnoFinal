@@ -24,7 +24,7 @@ public class ShitHead {
      * @return
      */
     public Card draw() {
-        if (!drawPile.empty() && player.getHand().size()<3) {
+        while (!drawPile.empty() && player.getHand().size()<3) {
         return drawPile.popCard();
         }
         return null;

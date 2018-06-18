@@ -5,8 +5,9 @@ package Main.uno3;
 
 import static Main.uno3.SpecialCardsSH.*;
 import static Main.uno3.Card.*;
-
+import static Main.uno3.CardHand.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * @author MarcSherman
@@ -15,16 +16,22 @@ import java.util.ArrayList;
 public class PlayerSH {
     private String name;
     private CardHand hand;
+    private CardHand river;
+    private CardHand hole;
     
     public PlayerSH(String name) {
-        ArrayList<Card> playerHand = new ArrayList<>();
+        ArrayList<Card> plyrHand = new ArrayList<>();
+        ArrayList<Card> plyrRiver = new ArrayList<>();
+        ArrayList<Card> plyrHole = new ArrayList<>();
         this.name = name;
-        this.hand = new CardHand(name, playerHand);
+        this.hand = new CardHand(name, plyrHand);
+        this.river = new CardHand(name, plyrRiver);
+        this.hole = new CardHand(name, plyrHole);
     }
     
-    /**The heart of the game: first searchForMatch in your hand,
-     * then if no match, drawForMatch
-     * @param sh Card played against previous card
+    /**
+     * 
+     * @param sh Makes ShitHead state variables available
      * @param prev - previous card played
      * @return
      */
@@ -37,65 +44,91 @@ public class PlayerSH {
     }
     
     /**
-     * Searches existing hand for match to Card prev.
-     * 
+     * Searches current Player's hand(s) for match to
+     *  Card prev.
+     * Three hands to search:
+     * 1) handCards - 7
+     * 2) riverCards - choice of 3
+     * 3) holeCards - random guess
      * @param prev card
      * @return match from hand
      */
     public Card searchForMatch(Card prev) {
-        
-        for (int i = 0; i < hand.size(); i++) {
-            Card card = hand.getCard(i);
-/**      Runs thru hand looks for ????
- *            
-*/
-            if (specialCardSH(card)) { 
-                return hand.popCard(i);               
-/**       Look for special cards, plays them next */
-            } else if(!specialCardSH(card) && 
-                    cardsPlayableRank(prev, card)) {
-                return hand.popCard(i);
-            }
-        }
-        
-/**     After 'filters above, only cases are ? 
- *         or card ?.  
-        Sort cards that are not special cards or 
-        regular wild cards to play highest first 
-        */                
-        CardHand.insertionSortCardHand(hand);    
-      
-        for (int i = hand.size() - 1; i >= 0; i--) { 
-            // search from end of hand as hand sorted ascending
+        if(!hand.empty()) {
+            insertionSortCardHand(hand);
+            for (int i = 0; i < hand.size(); i++) {
                 Card card = hand.getCard(i);
-                if (!specialCardSH(card) 
-                      && cardsPlayableRank(prev, card)) 
-                {
+                /**       Look for not special low cards */            
+                if (!specialCardSH(card) && card.getRank() 
+                        < 11 && cardsPlayableRank(prev, card)) { 
                     return hand.popCard(i);
                 }
-        }
-        // all else fails, play DrawFour
-        for (int i = hand.size() - 1; i >= 0; i--) {
+            }
             // search from end of hand as hand sorted ascending
+            for (int i = hand.size()-1; i >=0 ; i--) {
                 Card card = hand.getCard(i);
-                if (tenBomb(card)) { 
-                   return hand.popCard(i);
-                } 
+                /**       Look for not special high cards, plays them next */
+                if(!specialCardSH(card) && card.getRank() 
+                        > 11 && cardsPlayableRank(prev, card)) {
+                    return hand.popCard(i);
+                }
+            }
+            for (int i = 0; i < hand.size(); i++) { 
+                Card card = hand.getCard(i);
+                /**       Look for and play special cards */              
+                if (specialCardSH(card) 
+                        && cardsPlayableRank(prev, card)) {
+                    return hand.popCard(i);
+                }
+            } // End !hand.empty() 
+
+        } else if(!river.empty()) {
+            insertionSortCardHand(river);
+            for (int i = 0; i < river.size(); i++) {
+                Card card = river.getCard(i);
+                /**       Look for not special low cards */            
+                if (!specialCardSH(card) && card.getRank() 
+                        < 11 && cardsPlayableRank(prev, card)) { 
+                    return river.popCard(i);
+                }
+            }
+            // search from end of hand as hand sorted ascending
+            for (int i = river.size()-1; i >=0 ; i--) {
+                Card card = river.getCard(i);
+                /**       Look for not special high cards, plays them next */
+                if(!specialCardSH(card) && card.getRank() 
+                        > 11 && cardsPlayableRank(prev, card)) {
+                    return river.popCard(i);
+                }
+            }
+            for (int i = 0; i < river.size(); i++) { 
+                Card card = river.getCard(i);
+                /**       Look for and play special cards */              
+                if (specialCardSH(card) 
+                        && cardsPlayableRank(prev, card)) {
+                    return river.popCard(i);
+                }
+            }// End !river.empty()
+            Random rand = new Random();
+            int i = rand.nextInt(hole.size()+1);
+            if(cardsPlayableRank(prev, hole.getCard(i))) {
+                return hole.getCard(i);
+            }
         }
-     return null;
+        return null;
     } // End searchForMatch
     
-    public Card drawForMatch(ShitHead sh, Card prev) {
-        while (true) {
-            Card card = hand.draw();
-            System.out.println(name + " draws " + card);
-            if (cardsPlayableRank(prev, card)) { 
-                return card;  
-                // "return statement gets u out of while(true) loop
-            }
-            hand.addCard(card);
-        }
-    } //End drawForMatch
+//    public Card drawForMatch(ShitHead sh, Card prev) {
+//        while (true) {
+//            Card card = sh.draw();
+//            System.out.println(name + " draws " + card);
+//            if (cardsPlayableRank(prev, card)) { 
+//                return card;  
+//                // "return statement gets u out of while(true) loop
+//            }
+//            hand.addCard(card);
+//        }
+//    } //End drawForMatch
 
     /**
      * Gets the player's name
@@ -114,4 +147,12 @@ public class PlayerSH {
     public CardHand getHand() {
         return hand;
     }
-}
+
+    public CardHand getRiver() {
+        return river;
+    }
+
+    public CardHand getHole() {
+        return hole;
+    }
+}//End PlayerSH
