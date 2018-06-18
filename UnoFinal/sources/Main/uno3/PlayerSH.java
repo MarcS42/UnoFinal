@@ -130,6 +130,7 @@ public class PlayerSH {
 //        }
 //    } //End drawForMatch
 
+//++++++++++++++++ Helper Methods +++++++++++   
     /**
      * Gets the player's name
      * 
