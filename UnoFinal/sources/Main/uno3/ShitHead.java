@@ -12,11 +12,77 @@ import java.util.ArrayList;
 public class ShitHead {
     
     private ArrayList<PlayerSH> players;
+    private ArrayList<Card> fourOfaKindAL;
     private PlayerSH player;
     private static boolean fourOfaKind;
     private CardHand drawPile;
     private CardHand bomb;
     private CardHand discardPile;
+    private boolean firstPass;
+    
+
+    public ShitHead() {
+        /**
+         * SetUp variables
+         */
+        int handSize = 7;
+        int holeSize = 3;
+        int riverSize = 3;
+        int numberPlayers;
+        
+        
+        ArrayList<Card> dwPiles = new ArrayList<>();
+        ArrayList<Card> disPiles = new ArrayList<>();
+        ArrayList<Card> bomPiles = new ArrayList<>();
+        ArrayList<PlayerSH> players = new ArrayList<>();
+        
+        CardHand drawpile = new CardHand("dwPile", dwPiles);
+        CardHand discardPiles = new CardHand("disPile", disPiles);
+        CardHand bombPiles = new CardHand("bomPile", bomPiles);
+
+        /*
+         * Debugging tool lets you repeat a game with the same 
+         * Deck and initial deal. 
+         * 
+         * Hole card play alters the game as 
+         * 1) the hole card played is selected at random, and 
+         * 2) each hole card played is not memorized.
+         */
+        boolean debug = false;
+        CardDeck deck;
+        if(!debug) {
+            deck = new CardDeck("Deck", true);
+            deck.shuffle();
+            CardDeck.cloneDeck(deck);//copies deck to file 
+            //in case need to rerun game
+        } else {deck = CardDeck.deserializeCardDeck();
+           }
+        
+        numberPlayers = 4;
+        for (int i = 0; i < numberPlayers; i++) {
+            PlayerSH newPlayer = new PlayerSH("P " +i);
+            deck.deal(newPlayer.getHole(), holeSize);
+//            CardHand.insertionSortCardHand(newPlayer.getHand());
+            players.add(newPlayer);
+        }
+        for(PlayerSH p:players) {
+            deck.deal(p.getRiver(), riverSize);
+            CardHand.insertionSortCardHand(p.getRiver());
+        }
+        for(PlayerSH p:players) {
+            deck.deal(p.getHand(), handSize);
+            CardHand.insertionSortCardHand(p.getHand());
+        }
+        
+        /**
+         * State variables initialization
+         */
+        fourOfaKind = false;
+        firstPass = true;
+        player = players.get(0);
+
+                
+    }
     
     /**In SH only draw if 
      * 1) you played a card; 
@@ -49,7 +115,7 @@ public class ShitHead {
     }
 
     public void setFourOfaKind(boolean fourOfaKind) {
-        this.fourOfaKind = fourOfaKind;
+        ShitHead.fourOfaKind = fourOfaKind;
     }
 
     /**

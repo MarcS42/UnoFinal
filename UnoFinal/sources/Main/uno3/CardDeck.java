@@ -24,7 +24,7 @@ public class CardDeck implements Serializable{
     public CardDeck() {
     }
     
-    /**Constructor used for Hand
+    /**Constructor used for Hand/Piles
      * @param label
      * @param cards
      */

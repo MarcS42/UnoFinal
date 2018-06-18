@@ -51,14 +51,15 @@ public class PlayerSH {
      * 2) river Cards - choice of <= 3
      * 3) hole Cards - random guess <= 3
      * @param prev card
-     * @return match from hand
+     * @return match from hand(s)
      */
     public Card searchForMatch(Card prev) {
+//**** ToDo wrt multiple same Card matches(hover over task tag)***/
         if(!hand.empty()) {
             insertionSortCardHand(hand);
             for (int i = 0; i < hand.size(); i++) {
                 Card card = hand.getCard(i);
-                /**       Look for not special low cards */            
+     /**       Look for not special low cards */            
                 if (!specialCardSH(card) && card.getRank() 
                         < 11 && cardsPlayableRank(prev, card)) { 
                     return hand.popCard(i);
@@ -67,7 +68,7 @@ public class PlayerSH {
             // search from end of hand as hand sorted ascending
             for (int i = hand.size()-1; i >=0 ; i--) {
                 Card card = hand.getCard(i);
-                /**       Look for not special high cards, plays them next */
+     /**       Look for not special high cards, plays them next */
                 if(!specialCardSH(card) && card.getRank() 
                         > 11 && cardsPlayableRank(prev, card)) {
                     return hand.popCard(i);
@@ -75,7 +76,7 @@ public class PlayerSH {
             }
             for (int i = 0; i < hand.size(); i++) { 
                 Card card = hand.getCard(i);
-                /**       Look for and play special cards */              
+     /**       Look for and play special cards */              
                 if (specialCardSH(card) 
                         && cardsPlayableRank(prev, card)) {
                     return hand.popCard(i);
@@ -86,7 +87,7 @@ public class PlayerSH {
             insertionSortCardHand(river);
             for (int i = 0; i < river.size(); i++) {
                 Card card = river.getCard(i);
-                /**       Look for not special low cards */            
+     /**       Look for not special low cards */            
                 if (!specialCardSH(card) && card.getRank() 
                         < 11 && cardsPlayableRank(prev, card)) { 
                     return river.popCard(i);
@@ -95,7 +96,7 @@ public class PlayerSH {
             // search from end of hand as hand sorted ascending
             for (int i = river.size()-1; i >=0 ; i--) {
                 Card card = river.getCard(i);
-                /**       Look for not special high cards, plays them next */
+     /**       Look for not special high cards, plays them next */
                 if(!specialCardSH(card) && card.getRank() 
                         > 11 && cardsPlayableRank(prev, card)) {
                     return river.popCard(i);
@@ -103,12 +104,13 @@ public class PlayerSH {
             }
             for (int i = 0; i < river.size(); i++) { 
                 Card card = river.getCard(i);
-                /**       Look for and play special cards */              
+     /**       Look for and play special cards */              
                 if (specialCardSH(card) 
                         && cardsPlayableRank(prev, card)) {
                     return river.popCard(i);
                 }
             }// End !river.empty()
+            
             Random rand = new Random();
             int i = rand.nextInt(hole.size()+1);
             if(cardsPlayableRank(prev, hole.getCard(i))) {
