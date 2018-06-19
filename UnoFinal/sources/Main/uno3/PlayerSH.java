@@ -38,7 +38,7 @@ public class PlayerSH {
     public Card play(ShitHead sh, Card prev) {
         Card card = searchForMatch(prev);
         if (card == null) {
-            card = drawForMatch(sh, prev);
+//            card = drawForMatch(sh, prev);
         }
         return card;  
     }

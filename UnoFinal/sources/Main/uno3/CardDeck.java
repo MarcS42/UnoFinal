@@ -120,7 +120,7 @@ public static CardDeck deserializeCardDeck() {
    }
    /** Deal(that,n) Removes n cards from 
     * this.CardDeck, and
-    *  adds n cards to that.UnoHand
+    *  adds n cards to that.CardHand
     *  */
    public void deal(CardHand that, int n) {
        for (int i=0; i < n; i++) {
