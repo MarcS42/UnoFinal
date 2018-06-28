@@ -84,25 +84,12 @@ public class ShitHead {
         }
         deck.dealAll(drawPile);
        
-//        System.out.println("Constructor test: ");
-//        System.out.println("Player Cards test: ");
-//        for(PlayerSH player:players) {
-//            System.out.println("Hand cards");
-//            player.getHand().display();
-//            System.out.println("River cards");
-//            player.getRiver().display();
-//            System.out.println("Hole cards");
-//            player.getHole().display();
-//        }
-//        System.out.println("Draw Pile: " + drawPile.size());
-//        drawPile.display();
-        
         /**
          * State variables initialization
          */
         fourOfaKind = false;
         setFirstPass(true);
-        player = players.get(0);
+        player = pickFirstPlayer();
 
                 
     }// End Constructor SH
@@ -247,8 +234,9 @@ public class ShitHead {
     public void takeTurn() {
         
         if(isFirstPass()) {
-//            exchange Hand and River cards
-            player = pickFirstPlayer();
+            optimizeRiver();
+//            player = pickFirstPlayer();
+            discardPile.getCards().add(playFirstCard());
             setFirstPass(false);
         }
         
@@ -366,13 +354,13 @@ public void optimizeRiver() {
     }
 }//End optimizeRiver()
     
-/**
- * 1) Set Rank to look for, starting at 3; 
- * 2) Run through players counterclockwise looking at River cards(face up) first; 
- * 3) Run through players counterclockwise looking at Hand cards(hidden).
- * @return FirstPlayer
- */
-public PlayerSH pickFirstPlayer() {
+    /**
+     * 1) Set Rank to look for, starting at 3; 
+     * 2) Run through players counterclockwise looking at River cards(face up) first; 
+     * 3) Run through players counterclockwise looking at Hand cards(hidden).
+     * @return FirstPlayer
+     */
+    public PlayerSH pickFirstPlayer() {
     for(int rank = 3; rank <= 14; rank++) {
         for(int i = players.size()-1; i >= 0; i--) {// counterclockwise
             ArrayList<Card> pRiverCards = players.get(i).getRiver().getCards();
@@ -395,7 +383,17 @@ public PlayerSH pickFirstPlayer() {
     }
     return getPlayer();
 }//End pickFirstPlayer
-    
+
+    public Card playFirstCard() {
+        for(int i = 0; i < player.getHand().getCards().size(); i++) {
+            if(!specialCardSH(player.getHand().getCards().get(i))) {
+                return player.getHand().popCard(i);
+            }
+        continue;
+        }
+       return player.getHand().getCards().get(0); // if only have special cards
+    }
+
     public void playGame() {
 
         //keep playing until there's a winner (no cards left in hand)
