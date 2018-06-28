@@ -3,11 +3,13 @@ package Main.uno3;
 public class SpecialCardsSH {
     
     private static boolean specialCardSH;
+    private static boolean specialCardNt7SH;
     private static boolean twoReset;
     private static boolean threeMirror;
     private static boolean tenBomb;
     private static boolean sevenPlayLowerCard;
     private static boolean fourOfaKindBomb;
+    
     /**
     * SpecialCard true/false    
     * @param card
@@ -20,6 +22,20 @@ public class SpecialCardsSH {
            specialCardSH = true;
        }
        return specialCardSH;
+   }
+   
+   /**
+    * SpecialCardNotSeven true/false    
+    * @param card
+    * @return true if Rank == 2, 3, or 10.
+    */
+   public static boolean specialCardNt7SH(Card card) {
+       specialCardNt7SH = false;
+       int rank = card.getRank();
+       if(rank == 2 || rank == 3 || rank == 10) {
+           specialCardNt7SH = true;
+       }
+       return specialCardNt7SH;
    }
    
    public static boolean twoReset(Card card) {

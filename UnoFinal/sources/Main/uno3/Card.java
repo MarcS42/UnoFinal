@@ -130,7 +130,9 @@ public class Card implements Serializable {
     }//End compareCards(card1,card2)
 
     /**Suit does not matter
-     * Positive number means c1 <= c2
+     * 
+     * Positive number means ****c1 <= c2****
+     * 
      * @param card1
      * @param card2
      * @return +1, 0, -1
@@ -139,16 +141,41 @@ public class Card implements Serializable {
         if(!isAceHi()) {
             if (card1.getRank() <= card2.getRank())
                {return 1;}
-            if (card1.getRank() >= card2.getRank())
+            if (card1.getRank() > card2.getRank())
                {return -1;}
         } else {
             if (card1.getRankAceHi() <= card2.getRankAceHi())
                {return 1;}
-            if (card1.getRankAceHi() >= card2.getRankAceHi())
+            if (card1.getRankAceHi() > card2.getRankAceHi())
                {return -1;}
         }  
         return 0;
     }//End compareRanks(card1,card2)
+    
+    /**Suit does not matter++
+     * 
+     * Positive number means ****c1 < c2****
+     * 
+     * need this for testing multiple card Ranks Match (ex: pair of threes)
+     * If card1 == card2 --> return 0.
+     * @param card1
+     * @param card2
+     * @return +1, 0, -1
+     */
+    public static int compareRanks2(Card card1, Card card2) { 
+        if(!isAceHi()) {
+            if (card1.getRank() < card2.getRank())
+               {return 1;}
+            if (card1.getRank() > card2.getRank())
+               {return -1;}
+        } else {
+            if (card1.getRankAceHi() < card2.getRankAceHi())
+               {return 1;}
+            if (card1.getRankAceHi() > card2.getRankAceHi())
+               {return -1;}
+        }  
+        return 0;
+    }//End compareRanks2(card1,card2)
     
     /**
      * Card level scoring by game rules

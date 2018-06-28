@@ -6,6 +6,7 @@ package Main.uno3;
 import static Main.uno3.SpecialCardsSH.*;
 import static Main.uno3.Card.*;
 import static Main.uno3.CardHand.*;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -38,7 +39,7 @@ public class PlayerSH {
     public Card play(ShitHead sh, Card prev) {
         Card card = searchForMatch(prev);
         if (card == null) {
-//            card = drawForMatch(sh, prev);
+            return null;
         }
         return card;  
     }
@@ -47,7 +48,7 @@ public class PlayerSH {
      * Searches current Player's hand(s) for match to
      *  Card prev.
      * Three hands to search:
-     * 1) hand Cards - 7
+     * 1) hand Cards - 4 cards
      * 2) river Cards - choice of <= 3
      * 3) hole Cards - random guess <= 3
      * @param prev card
@@ -56,15 +57,31 @@ public class PlayerSH {
     public Card searchForMatch(Card prev) {
 //**** ToDo wrt multiple same Card matches(hover over task tag)***/
         if(!hand.empty()) {
+            ArrayList<Card> multiPlayable = new ArrayList<>();
+            ArrayList<Card> singlePlayable = new ArrayList<>();
             insertionSortCardHand(hand);
             for (int i = 0; i < hand.size(); i++) {
                 Card card = hand.getCard(i);
      /**       Look for not special low cards */            
                 if (!specialCardSH(card) && card.getRank() 
                         < 11 && cardsPlayableRank(prev, card)) { 
-                    return hand.popCard(i);
+                    singlePlayable.add(card);
+                }
+            } 
+            
+            /**can pullout consecutive pairs(ok bcuz sortAscending), but not 3's or 4's*/
+            if(singlePlayable.size() > 1) {
+                int p = singlePlayable.size()-1;
+                while (p > 0) { 
+                    if(singlePlayable.get(p).getRank() == singlePlayable.get(p-1).getRank()) {
+                        multiPlayable.add(singlePlayable.remove(p));
+                        multiPlayable.add(singlePlayable.remove(p-1));
+                        p--;
+                    }
+                    p--;  
                 }
             }
+
             // search from end of hand as hand sorted ascending
             for (int i = hand.size()-1; i >=0 ; i--) {
                 Card card = hand.getCard(i);
@@ -115,22 +132,10 @@ public class PlayerSH {
             int i = rand.nextInt(hole.size()+1);
             if(cardsPlayableRank(prev, hole.getCard(i))) {
                 return hole.getCard(i);
-            }
+            }//End pickRandom Hole card
         }
         return null;
     } // End searchForMatch
-    
-//    public Card drawForMatch(ShitHead sh, Card prev) {
-//        while (true) {
-//            Card card = sh.draw();
-//            System.out.println(name + " draws " + card);
-//            if (cardsPlayableRank(prev, card)) { 
-//                return card;  
-//                // "return statement gets u out of while(true) loop
-//            }
-//            hand.addCard(card);
-//        }
-//    } //End drawForMatch
 
 //++++++++++++++++ Helper Methods +++++++++++   
     /**
