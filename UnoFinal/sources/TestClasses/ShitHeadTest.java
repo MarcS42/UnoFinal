@@ -7,7 +7,7 @@ public class ShitHeadTest {
 
     public static void main(String[] args) {
         ShitHead game = new ShitHead();
-        game.displayState();
+        game.playGame();
 
 
     }

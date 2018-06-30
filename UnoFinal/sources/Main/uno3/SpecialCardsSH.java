@@ -17,7 +17,7 @@ public class SpecialCardsSH {
     */
    public static boolean specialCardSH(Card card) {
        specialCardSH = false;
-       int rank = card.getRank();
+       int rank = card.getRankAceHi();
        if(rank == 2 || rank == 3 || rank == 10 || rank == 7) {
            specialCardSH = true;
        }
@@ -31,7 +31,7 @@ public class SpecialCardsSH {
     */
    public static boolean specialCardNt7SH(Card card) {
        specialCardNt7SH = false;
-       int rank = card.getRank();
+       int rank = card.getRankAceHi();
        if(rank == 2 || rank == 3 || rank == 10) {
            specialCardNt7SH = true;
        }
@@ -40,7 +40,7 @@ public class SpecialCardsSH {
    
    public static boolean twoReset(Card card) {
        twoReset = false;
-       if(card.getRank() == 2) {
+       if(card.getRankAceHi() == 2) {
            return true;
        }
        return twoReset;
@@ -48,7 +48,7 @@ public class SpecialCardsSH {
    
    public static boolean threeMirror(Card card) {
        threeMirror = false;
-       if(card.getRank() == 3) {
+       if(card.getRankAceHi() == 3) {
            return true;
        }
        return threeMirror;
@@ -56,7 +56,7 @@ public class SpecialCardsSH {
    
    public static boolean tenBomb(Card card) {
        tenBomb = false;
-       if(card.getRank() == 10) {
+       if(card.getRankAceHi() == 10) {
            return true;
        }
        return tenBomb;
@@ -64,7 +64,7 @@ public class SpecialCardsSH {
   
    public static boolean sevenPlayLowerCard(Card card) {
        sevenPlayLowerCard = false;
-       if(card.getRank() == 7) {
+       if(card.getRankAceHi() == 7) {
            return true;
        }
        return sevenPlayLowerCard;

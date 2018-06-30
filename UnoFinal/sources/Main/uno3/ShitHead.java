@@ -3,7 +3,7 @@
  */
 package Main.uno3;
 
-//*****Fix  and takeTurn() and fourOfaKindAL and player plays> 1 card ************
+//*****Fix  and takeTurn() and fourOfaKindAL and player plays > 1 card ************
 import static Main.uno3.SpecialCardsSH.*;
 //import static Main.uno3.Card.*;
 import static Main.uno3.CardHand.*;
@@ -58,7 +58,7 @@ public class ShitHead {
          * 1) the hole card played is selected at random, and 
          * 2) each hole card played is not memorized.
          */
-        boolean debug = false;
+        boolean debug = true;
         CardDeck deck;
         if(!debug) {
             deck = new CardDeck("Deck", true);//AceHiLo Constructor of CardDeck
@@ -119,8 +119,8 @@ public class ShitHead {
         System.out.println("Discard Pile:");
         if(discardPile != null) {
             int dPSize = discardPile.size();
-            if(dPSize > 15) {
-                for(int i= dPSize - 15; i <= dPSize-1; i++) {
+            if(dPSize > 10) {
+                for(int i= dPSize - 10; i <= dPSize-1; i++) {
                     Card.printCard(discardPile.getCard(i));
                 }
                 System.out.println("");    
@@ -163,8 +163,10 @@ public class ShitHead {
      * @return
      */
     public Card draw() {
-        while (!drawPile.empty() && player.getHand().size()< handSize) {
-        return drawPile.popCard();
+        while (!drawPile.empty() && player.getHand().size()
+                < handSize) {
+            
+            return drawPile.popCard();
         }
         return null;
     }
@@ -217,27 +219,35 @@ public class ShitHead {
     
   //------------------------------------------------------------------------    
 
-    /** Uno- Basic functioning of game is (see takeTurn() below). 
-    * a) start with previous card == discardPile.last;
-    *   a1) If it is first round of game, deal with special
-    *   cards that change the initial player from P0(skip, reverse) 
-    * b) try to match it with what you have; 
+    /** ShitHead- Basic functioning of game is (see takeTurn() below). 
+    * a) First Pass actions:
+    *       1) optimizeRiver() Cards with Hand cards;
+    *       2) FirstPlayer playFirstCard() !Special, draw new card;
+    *       3) Advance nextPlayer(Player);
+    *       4) displayState().
+    * b) Start with previous card == discardPile.last;
+    * -) try to match it with what you have; 
     *   b1) if previous is WD4 or D2, exit standard 
     *   play waterfall to handle these cards where 
     *   multiple cards played in sequence changes regular 
     *   waterfall;
-    * c) Eventually, if no Match, drawForMatch == next card;
-    * d) Next card played becomes previous card to following
+    * -) Eventually, if no Match, drawForMatch == next card;
+    * -) Next card played becomes previous card to following
     *   player.
      * 
      */
     public void takeTurn() {
         
+        /**
+         * Start firstPass
+         * 
+         */
         if(isFirstPass()) {
             optimizeRiver();
-//            player = pickFirstPlayer();
-            discardPile.getCards().add(playFirstCard());
+            playFirstCard();
+            player = nextPlayer(player);
             setFirstPass(false);
+            displayState();
         }
         
         System.out.println("Player into TakeTurn() = " 
@@ -246,23 +256,6 @@ public class ShitHead {
 
         Card prev = discardPile.last();
 
-        /**
-         * Start firstPass && Special Card
-         * 
-         * Only spC's you can have affected by FirstPass are
-         * Skip and Reverse because they change the order of play 
-         */
-        if (firstPass && 
-                specialCardSH(prev)) {
-            firstPass = false;
-//            if (unoCardSkip(prev)) {
-//                player = players.get(players.indexOf(player)+1);
-//            }
-//            if (unoCardReverse(prev)) {
-//                toggleDirectionOfPlay();
-//                player = players.get(players.size()-1);
-//            }
-        } //End firstPass && Special tests
 
         /**
          * Start actions for previous card = Special
@@ -275,17 +268,8 @@ public class ShitHead {
             if (threeMirror(prev)) {
 
             }
-//            prev = discardPile.last();
         }//End actions for previous card = Special
 
-//        if(!uCardWldorWD4(prev)) {
-//            System.out.println("nextPlayer() = " + 
-//                    player.getName() + " prev card = " + 
-//                    prev);
-//        } else {System.out.println("nextPlayer() = " + 
-//                player.getName() + " prev card = " + prev+ 
-//                " Match " + Card.getRANKSAceHi()[wildColor]);}
-//
         Card next = player.play(this, prev);
 
 
@@ -327,35 +311,45 @@ public class ShitHead {
  *  5) Next Player.
  */
 public void optimizeRiver() {
-    
+//need to check what happened to p2 hand resulting in > 4 cards    
     for(PlayerSH p:players) {
-        for(Card card:p.getRiver().getCards()) {
-            if(specialCardNt7SH(card) || 
-                    card.getRank() > 11) {
+        ArrayList<Card> tempR = new ArrayList<>(), tempH= new ArrayList<>();
+        for(int card=0; card < riverSize; card++) {
+            Card riverCard = p.getRiver().getCard(card);
+            if(specialCardNt7SH(riverCard) || 
+                    riverCard.getRankAceHi() > 11) {
                 continue;
             } else {
-                for(Card c:p.getHand().getCards()) {
-                    if(specialCardNt7SH(c) || 
-                            c.getRank() > 11) {
-                        Card tempR = card;
-                        Card tempH = c;
-                        p.getHand().getCards().remove(c);
-                        p.getRiver().getCards().remove(card);
-                        p.getHand().getCards().add(tempR);
-                        p.getRiver().getCards().add(tempH);
-                        insertionSortCardHand(p.getHand());
+                ArrayList<Card> HCdPlayed = new ArrayList<>();
+                for(int c=0; c < handSize; c++) {
+                    
+                    Card handCard = p.getHand().getCard(c);
+                    if(specialCardNt7SH(handCard) || 
+                            handCard.getRankAceHi() > 11) {
+                        HCdPlayed.add(handCard);
+                        if(HCdPlayed.size() <= 1) {
+                        tempR.add(riverCard);
+                        tempH.add(handCard);
+                        p.getHand().getCards().removeAll(tempH);
+                        p.getHand().getCards().addAll(tempR);
+                        p.getRiver().getCards().removeAll(tempR);
+                        p.getRiver().getCards().addAll(tempH);
+//                        insertionSortCardHand(p.getHand());
+                        }if(HCdPlayed.size() >1 && HCdPlayed.get(0).equals(HCdPlayed.get(1))) {
+                          continue;  
+                        }
                     } else {
                         continue;
                     }
                 }
             }
         }
-        
+        insertionSortCardHand(p.getHand());
     }
 }//End optimizeRiver()
     
     /**
-     * 1) Set Rank to look for, starting at 3; 
+     * 1) Set Rank to look for, starting act 3; 
      * 2) Run through players counterclockwise looking at River cards(face up) first; 
      * 3) Run through players counterclockwise looking at Hand cards(hidden).
      * @return FirstPlayer
@@ -384,15 +378,29 @@ public void optimizeRiver() {
     return getPlayer();
 }//End pickFirstPlayer
 
-    public Card playFirstCard() {
-        for(int i = 0; i < player.getHand().getCards().size(); i++) {
-            if(!specialCardSH(player.getHand().getCards().get(i))) {
-                return player.getHand().popCard(i);
+    public void playFirstCard() {
+        Card firstCard = null;
+        int firstCdCt = 0;
+        for(int i = 0; i < handSize; i++) {
+            if(firstCard == null) {
+                Card f1 = player.getHand().getCards().get(i);
+                if(!specialCardSH(f1)) {
+                    firstCard = player.getHand().popCard(i);
+                    discardPile.addCard(firstCard);
+                    player.getHand().addCard(drawPile.popCard());
+                    firstCdCt++;
+                } else {
+                    continue;
+                }
             }
-        continue;
         }
-       return player.getHand().getCards().get(0); // if only have special cards
-    }
+        // if firstPlayer only has special cards
+        if(firstCdCt == 0) {
+            firstCard = player.getHand().popCard(0);
+            discardPile.addCard(firstCard);
+        }  
+
+    }// End playFirstCard().
 
     public void playGame() {
 
