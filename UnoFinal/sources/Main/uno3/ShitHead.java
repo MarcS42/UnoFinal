@@ -23,6 +23,7 @@ public class ShitHead {
     private CardHand drawPile;
     private CardHand bomb;
     private CardHand discardPile;
+    private boolean debug;
     private boolean firstPass;
     private int handSize;
     private int riverSize;
@@ -58,12 +59,12 @@ public class ShitHead {
          * 1) the hole card played is selected at random, and 
          * 2) each hole card played is not memorized.
          */
-        boolean debug = true;
+        debug = false;
         CardDeck deck;
         if(!debug) {
             deck = new CardDeck("Deck", true);//AceHiLo Constructor of CardDeck
             deck.shuffle();
-            cloneDeck(deck);//copies deck to file 
+            CardDeck.cloneDeck(deck);//copies deck to file 
             //in case need to rerun game
         } else {deck = CardDeck.deserializeCardDeck();
            }
@@ -100,7 +101,8 @@ public class ShitHead {
     public void displayState() {
         System.out.println("");
         System.out.println("State Variables: ");
-        System.out.println("FourOfaKind: " + fourOfaKind + "; FirstPass: " + firstPass + "; Current Player: " + player.getName() );
+        System.out.println("FourOfaKind: " + fourOfaKind + "; FirstPass: " + firstPass + 
+                "; \nCurrent Player: " + player.getName() + "; Debug: " + debug);
         
         System.out.println("NextPlayer = " + nextPlayer(player).getName());
         System.out.println("");
@@ -227,7 +229,7 @@ public class ShitHead {
     *       4) displayState().
     * b) Start with previous card == discardPile.last;
     * -) try to match it with what you have; 
-    *   b1) if previous is WD4 or D2, exit standard 
+    *   b1) if previous is -- or --, exit standard 
     *   play waterfall to handle these cards where 
     *   multiple cards played in sequence changes regular 
     *   waterfall;
@@ -304,49 +306,59 @@ public class ShitHead {
 /**For each Player:
  * Looks at river Cards:
  *  1) If card is 2, 3, or 10, or Q, K, Ace, do nothing; 
- *  2) otherwise searches Player Hand cards for 2, 3, or 10, or Q, K, Ace;
+ *  2) otherwise searches Player Hand cards for 2, 3, or 10, 
+ *      or Q, K, Ace;
  *  3) if found, swaps Hand card for River card.
  *  3.1) Insertion Sort Player Hand cards
+ *  3.2) Insertion Sort Player River cards
  *  4) Not found, do nothing/keep looking.
- *  5) Next Player.
+ *  5) Rerun again to pickup riverCards that changed 
+ *     position when Hand previously swapped for River
+ *  6) Next Player.
  */
-public void optimizeRiver() {
-//need to check what happened to p2 hand resulting in > 4 cards    
-    for(PlayerSH p:players) {
-        ArrayList<Card> tempR = new ArrayList<>(), tempH= new ArrayList<>();
-        for(int card=0; card < riverSize; card++) {
-            Card riverCard = p.getRiver().getCard(card);
-            if(specialCardNt7SH(riverCard) || 
-                    riverCard.getRankAceHi() > 11) {
-                continue;
-            } else {
-                ArrayList<Card> HCdPlayed = new ArrayList<>();
-                for(int c=0; c < handSize; c++) {
-                    
-                    Card handCard = p.getHand().getCard(c);
-                    if(specialCardNt7SH(handCard) || 
-                            handCard.getRankAceHi() > 11) {
-                        HCdPlayed.add(handCard);
-                        if(HCdPlayed.size() <= 1) {
-                        tempR.add(riverCard);
-                        tempH.add(handCard);
-                        p.getHand().getCards().removeAll(tempH);
-                        p.getHand().getCards().addAll(tempR);
-                        p.getRiver().getCards().removeAll(tempR);
-                        p.getRiver().getCards().addAll(tempH);
-//                        insertionSortCardHand(p.getHand());
-                        }if(HCdPlayed.size() >1 && HCdPlayed.get(0).equals(HCdPlayed.get(1))) {
-                          continue;  
-                        }
-                    } else {
+    public void optimizeRiver() {
+        //   Fixed riverCards sometimes not being replaced with better handCards by running twice.
+        //   Problem is that when removeAll and addAll is done on riverCards, card order
+        //     changes such that low river card can be skipped. 
+        
+        for(int j = 0; j < 2; j++) {//Run optimize twice to overcome addAll/removAll discussed above
+            for(PlayerSH p:players) {
+
+                int rCardsOptimized = 0;//Counts number of R 
+//                cards actually optimized
+                int c;
+                int optPasses = 0; //count the number of optim. attempts to avoid 
+//                     perpetual loop if Hand cards not better than River cards
+                while((rCardsOptimized < riverSize) && (optPasses < riverSize)) {
+                    optPasses++;
+                    Card riverCard = p.getRiver().getCard(rCardsOptimized);
+                    if(specialCardNt7SH(riverCard) || 
+                            riverCard.getRankAceHi() > 11) {
+                        rCardsOptimized++;
                         continue;
-                    }
-                }
-            }
-        }
-        insertionSortCardHand(p.getHand());
-    }
-}//End optimizeRiver()
+                    } else {// Starts at end w/sorted ascending(..??..)
+                        for(c=handSize-1; c >= 0; c--) {
+                            ArrayList<Card> tempR = new ArrayList<>(), tempH= new ArrayList<>();
+                            Card handCard = p.getHand().getCard(c);
+                            if(specialCardNt7SH(handCard) || 
+                                    handCard.getRankAceHi() > 11) {
+                                tempR.add(riverCard);
+                                tempH.add(handCard);
+                                p.getHand().getCards().removeAll(tempH);
+                                p.getHand().getCards().addAll(tempR);
+                                p.getRiver().getCards().removeAll(tempR);
+                                p.getRiver().getCards().addAll(tempH);
+                                rCardsOptimized++;
+                                c=-1;//Once R card optimized with swap from H card, stop looking at H cards
+                                insertionSortCardHand(p.getHand());
+                                insertionSortCardHand(p.getRiver());
+                            }//* End if (handCard Special || > 11) 
+                        }// End for(c=handSize-1;c >=0 ;c--)
+                    }//*End if (riverCard Special || > 11) 
+                }// End while(rCardOptimized < riverSize)
+            }// End p:players
+        }// End rerun via for(j=0;j<2;j++)
+    }// End optimize riverCards()
     
     /**
      * 1) Set Rank to look for, starting act 3; 
@@ -386,8 +398,11 @@ public void optimizeRiver() {
                 Card f1 = player.getHand().getCards().get(i);
                 if(!specialCardSH(f1)) {
                     firstCard = player.getHand().popCard(i);
+                    System.out.println("FirstPlayer "+ player.getName()+" plays "+ firstCard);
                     discardPile.addCard(firstCard);
-                    player.getHand().addCard(drawPile.popCard());
+                    Card dCard = draw();
+                    System.out.println("FirstPlayer draws "+ dCard);
+                    player.getHand().addCard(dCard);
                     firstCdCt++;
                 } else {
                     continue;
@@ -419,4 +434,4 @@ public void optimizeRiver() {
     }
     
 
-}
+}// End ShitHead class

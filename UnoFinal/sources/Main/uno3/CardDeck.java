@@ -19,7 +19,7 @@ public class CardDeck implements Serializable{
     
     private String label;
     private ArrayList<Card> cards;
-    private static String fileName = new String("savedDeck.ser");
+    private static String fileName = "savedDeck.ser";
 
     public CardDeck() {
     }
