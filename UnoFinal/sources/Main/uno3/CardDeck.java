@@ -216,7 +216,7 @@ public static CardDeck deserializeCardDeck() {
     }
     
     /*
-     * Used in Uno takeTurn() gets last card from calling CardCollection, but
+     * Used in takeTurn() gets last card from calling CardCollection, but
      * doesn't remove it So it is like taking a look at the card
      */
     public Card last() {

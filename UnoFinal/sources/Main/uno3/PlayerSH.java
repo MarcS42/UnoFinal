@@ -63,7 +63,7 @@ public class PlayerSH {
             for (int i = 0; i < hand.size(); i++) {
                 Card card = hand.getCard(i);
      /**       Look for not special low cards */            
-                if (!specialCardSH(card) && card.getRank() 
+                if (!specialCardSH(card) && card.getRankAceHi() 
                         < 11 && cardsPlayableRank(prev, card)) { 
                     singlePlayable.add(card);
                 }
@@ -73,7 +73,7 @@ public class PlayerSH {
             if(singlePlayable.size() > 1) {
                 int p = singlePlayable.size()-1;
                 while (p > 0) { 
-                    if(singlePlayable.get(p).getRank() == singlePlayable.get(p-1).getRank()) {
+                    if(singlePlayable.get(p).getRankAceHi() == singlePlayable.get(p-1).getRankAceHi()) {
                         multiPlayable.add(singlePlayable.remove(p));
                         multiPlayable.add(singlePlayable.remove(p-1));
                         p--;
@@ -86,7 +86,7 @@ public class PlayerSH {
             for (int i = hand.size()-1; i >=0 ; i--) {
                 Card card = hand.getCard(i);
      /**       Look for not special high cards, plays them next */
-                if(!specialCardSH(card) && card.getRank() 
+                if(!specialCardSH(card) && card.getRankAceHi() 
                         > 11 && cardsPlayableRank(prev, card)) {
                     return hand.popCard(i);
                 }
@@ -105,7 +105,7 @@ public class PlayerSH {
             for (int i = 0; i < river.size(); i++) {
                 Card card = river.getCard(i);
      /**       Look for not special low cards */            
-                if (!specialCardSH(card) && card.getRank() 
+                if (!specialCardSH(card) && card.getRankAceHi() 
                         < 11 && cardsPlayableRank(prev, card)) { 
                     return river.popCard(i);
                 }
@@ -114,7 +114,7 @@ public class PlayerSH {
             for (int i = river.size()-1; i >=0 ; i--) {
                 Card card = river.getCard(i);
      /**       Look for not special high cards, plays them next */
-                if(!specialCardSH(card) && card.getRank() 
+                if(!specialCardSH(card) && card.getRankAceHi() 
                         > 11 && cardsPlayableRank(prev, card)) {
                     return river.popCard(i);
                 }

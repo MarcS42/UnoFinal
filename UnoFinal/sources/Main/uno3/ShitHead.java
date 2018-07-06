@@ -263,11 +263,17 @@ public class ShitHead {
          * Start actions for previous card = Special
          */
         if(specialCardSH(prev)) {
-            if (twoReset(prev)) {
-
-            }
 
             if (threeMirror(prev)) {
+                Card prev2 = discardPile.getCard(discardPile.size()-2);
+
+            }
+            
+            if (sevenPlayLowerCard(prev)) {
+
+            }
+            
+            if (tenBomb(prev)) {
 
             }
         }//End actions for previous card = Special

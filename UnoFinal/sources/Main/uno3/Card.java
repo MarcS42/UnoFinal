@@ -88,7 +88,8 @@ public class Card implements Serializable {
                 return true;
             }
         } else {
-            if (card2.getRankAceHi() >= card1.getRankAceHi()) {
+            if (card2.getRankAceHi() >= card1.getRankAceHi() || 
+                    SpecialCardsSH.specialCardNt7SH(card2)) {
                 return true;
             }
         }
