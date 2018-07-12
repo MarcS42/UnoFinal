@@ -140,30 +140,30 @@ public class TestCard {
         setAceHi(false);
         
        System.out.println("cardsPlayableRank(sixH, aceC): "
-                 + cardsPlayableRank(sixH,aceC));
+                 + cardsPlayableRankSH(sixH,aceC));
        System.out.println(" cardsPlayableRank(sixH,sixH): " +  
-                cardsPlayableRank(sixH,sixH));
+                cardsPlayableRankSH(sixH,sixH));
        System.out.println(" cardsPlayableRank(aceD,aceD): " +                  
-                cardsPlayableRank(aceD,aceD));
+                cardsPlayableRankSH(aceD,aceD));
        System.out.println(" cardsPlayableRank(kingD,aceD): " +                  
-                cardsPlayableRank(kingD,aceD));
+                cardsPlayableRankSH(kingD,aceD));
        System.out.println(" cardsPlayableRank(aceS,queenS): " +                  
-               cardsPlayableRank(aceS,queenS));
+               cardsPlayableRankSH(aceS,queenS));
        System.out.println("");
       
        System.out.println("cardsPlayableRank - AceHi test: ");
         setAceHi(true);
         
        System.out.println("cardsPlayableRank(sixHAH, aceCAH): "
-                + cardsPlayableRank(sixHAH,aceCAH));
+                + cardsPlayableRankSH(sixHAH,aceCAH));
        System.out.println(" cardsPlayableRank(sixHAH,sixHAH): " +  
-               cardsPlayableRank(sixHAH,sixHAH));
+               cardsPlayableRankSH(sixHAH,sixHAH));
        System.out.println(" cardsPlayableRank(aceDAH,aceDAH): " +                  
-               cardsPlayableRank(aceDAH,aceDAH));
+               cardsPlayableRankSH(aceDAH,aceDAH));
        System.out.println(" cardsPlayableRank(kingDAH,aceDAH): " +                  
-               cardsPlayableRank(kingDAH,aceDAH));
+               cardsPlayableRankSH(kingDAH,aceDAH));
        System.out.println(" cardsPlayableRank(aceSAH,queenSAH): " +                  
-               cardsPlayableRank(aceSAH,queenSAH));
+               cardsPlayableRankSH(aceSAH,queenSAH));
        System.out.println("");
 //************************************************
        System.out.println("scoreCard Test: ");

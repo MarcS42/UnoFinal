@@ -51,7 +51,7 @@ public class Uno {
      *         of deck to draw pile.
      * Initialize key game variables starting values.
      */
-    public Uno() { //Uno Constructor
+    public Uno() { 
         in = new Scanner(System.in);
         players = new ArrayList<UnoPlayer>();
 
@@ -507,7 +507,7 @@ public class Uno {
         player = nextPlayer(player);
     }
     
-    /*//**
+      /**
         * Change Players: handles skips and reverses
         * Uses ArrayList method indexOf(Obj) to return 
         * current players index #

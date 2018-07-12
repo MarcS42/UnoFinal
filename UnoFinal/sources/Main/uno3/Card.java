@@ -80,7 +80,7 @@ public class Card implements Serializable {
      * @param card2 Card that is potentially playable
      * @return
      */
-    public static boolean cardsPlayableRank(Card card1, 
+    public static boolean cardsPlayableRankSH(Card card1, 
             Card card2) { 
         //card1 = previous card
         if(!isAceHi()) {
@@ -88,6 +88,11 @@ public class Card implements Serializable {
                 return true;
             }
         } else {
+            if(SpecialCardsSH.sevenPlayLowerCard(card1) &&
+                card2.getRankAceHi() <= card1.getRankAceHi() || 
+                SpecialCardsSH.specialCardNt7SH(card2)) {
+                return true;
+            }
             if (card2.getRankAceHi() >= card1.getRankAceHi() || 
                     SpecialCardsSH.specialCardNt7SH(card2)) {
                 return true;
@@ -131,7 +136,7 @@ public class Card implements Serializable {
     }//End compareCards(card1,card2)
 
     /**Suit does not matter
-     * 
+     * Checks AceHi/!AceHi
      * Positive number means ****c1 <= c2****
      * 
      * @param card1

@@ -39,8 +39,10 @@ public class PlayerSH {
     public Card play(ShitHead sh, Card prev) {
         Card card = searchForMatch(prev);
         if (card == null) {
+            sh.getDiscardPile().dealAll(hand);
             return null;
         }
+        sh.draw();
         return card;  
     }
     
@@ -55,86 +57,99 @@ public class PlayerSH {
      * @return match from hand(s)
      */
     public Card searchForMatch(Card prev) {
-//**** ToDo wrt multiple same Card matches(hover over task tag)***/
+    //**** ToDo wrt multiple same Card matches(hover over task tag)***/
         if(!hand.empty()) {
-            ArrayList<Card> multiPlayable = new ArrayList<>();
-            ArrayList<Card> singlePlayable = new ArrayList<>();
+//            ArrayList<Card> multiPlayable = new ArrayList<>();
+//            ArrayList<Card> singlePlayable = new ArrayList<>();
             insertionSortCardHand(hand);
+            
+     /**       Look for not special low cards */      
             for (int i = 0; i < hand.size(); i++) {
                 Card card = hand.getCard(i);
-     /**       Look for not special low cards */            
-                if (!specialCardSH(card) && card.getRankAceHi() 
-                        < 11 && cardsPlayableRank(prev, card)) { 
-                    singlePlayable.add(card);
+                    
+                if (!specialCardNt7SH(card) && card.getRankAceHi() 
+                        <= 11 && cardsPlayableRankSH(prev, card)) { 
+//                    singlePlayable.add(card);
+                    return hand.popCard(i);
                 }
             } 
-            
-            /**can pullout consecutive pairs(ok bcuz sortAscending), but not 3's or 4's*/
-            if(singlePlayable.size() > 1) {
-                int p = singlePlayable.size()-1;
-                while (p > 0) { 
-                    if(singlePlayable.get(p).getRankAceHi() == singlePlayable.get(p-1).getRankAceHi()) {
-                        multiPlayable.add(singlePlayable.remove(p));
-                        multiPlayable.add(singlePlayable.remove(p-1));
-                        p--;
-                    }
-                    p--;  
-                }
-            }
 
-            // search from end of hand as hand sorted ascending
+            /*can pull out consecutive pairs(ok bcuz sortAscending),
+             *  but not 3's or 4's*/
+//            if(singlePlayable.size() > 1) {
+//                int p = singlePlayable.size()-1;
+//                while (p > 0) { 
+//                    if(singlePlayable.get(p).getRankAceHi() == 
+//                            singlePlayable.get(p-1).getRankAceHi()) {
+//                        multiPlayable.add(singlePlayable.remove(p));
+//                        multiPlayable.add(singlePlayable.remove(p-1));
+//                        p--;
+//                    }
+//                    p--;  
+//                }
+//            }
+
+       /**    Look for not special high cards, plays them next */
             for (int i = hand.size()-1; i >=0 ; i--) {
                 Card card = hand.getCard(i);
-     /**       Look for not special high cards, plays them next */
+         
                 if(!specialCardSH(card) && card.getRankAceHi() 
-                        > 11 && cardsPlayableRank(prev, card)) {
+                        > 11 && cardsPlayableRankSH(prev, card)) {
                     return hand.popCard(i);
                 }
             }
+         
+      /**     Look for and play special cards */
             for (int i = 0; i < hand.size(); i++) { 
                 Card card = hand.getCard(i);
-     /**       Look for and play special cards */              
+                        
                 if (specialCardSH(card) 
-                        && cardsPlayableRank(prev, card)) {
+                        && cardsPlayableRankSH(prev, card)) {
                     return hand.popCard(i);
                 }
-            } // End !hand.empty() 
-
-        } else if(!river.empty()) {
+            }  
+         return null;
+        } // End !hand.empty()
+        
+        else if(!river.empty()) {
             insertionSortCardHand(river);
+            
+       /**       Look for not special low cards */            
             for (int i = 0; i < river.size(); i++) {
                 Card card = river.getCard(i);
-     /**       Look for not special low cards */            
-                if (!specialCardSH(card) && card.getRankAceHi() 
-                        < 11 && cardsPlayableRank(prev, card)) { 
+            
+                if (!specialCardNt7SH(card) && card.getRankAceHi() 
+                        <= 11 && cardsPlayableRankSH(prev, card)) { 
                     return river.popCard(i);
                 }
             }
-            // search from end of hand as hand sorted ascending
+       /**       Look for not special high Rcards, plays them next */
             for (int i = river.size()-1; i >=0 ; i--) {
                 Card card = river.getCard(i);
-     /**       Look for not special high cards, plays them next */
+
                 if(!specialCardSH(card) && card.getRankAceHi() 
-                        > 11 && cardsPlayableRank(prev, card)) {
+                        > 11 && cardsPlayableRankSH(prev, card)) {
                     return river.popCard(i);
                 }
             }
+       /**       Look for and play special Rcards */            
             for (int i = 0; i < river.size(); i++) { 
                 Card card = river.getCard(i);
-     /**       Look for and play special cards */              
+              
                 if (specialCardSH(card) 
-                        && cardsPlayableRank(prev, card)) {
+                        && cardsPlayableRankSH(prev, card)) {
                     return river.popCard(i);
                 }
+            }
+             return null;
             }// End !river.empty()
-            
+
             Random rand = new Random();
             int i = rand.nextInt(hole.size()+1);
-            if(cardsPlayableRank(prev, hole.getCard(i))) {
-                return hole.getCard(i);
+            if(cardsPlayableRankSH(prev, hole.getCard(i))) {
+                return hole.popCard(i);
             }//End pickRandom Hole card
-        }
-        return null;
+     return null;
     } // End searchForMatch
 
 //++++++++++++++++ Helper Methods +++++++++++   
@@ -148,18 +163,26 @@ public class PlayerSH {
     }
 
     /**
-     * Gets the player's hand
+     * Gets Hand
      * 
      * @return
      */
     public CardHand getHand() {
         return hand;
     }
+    
+    public ArrayList<Card> getHCards() {
+        return getHand().getCards();
+    }
 
     public CardHand getRiver() {
         return river;
     }
 
+    public ArrayList<Card> getRCards() {
+        return getRiver().getCards();
+    }
+    
     public CardHand getHole() {
         return hole;
     }
