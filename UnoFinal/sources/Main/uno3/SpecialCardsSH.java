@@ -81,5 +81,21 @@ public static boolean fourOfaKindBomb(Card card) {
        }
        return fourOfaKindBomb;
    }
+
+public static boolean isThreeMirror() {
+    return threeMirror;
+}
+
+public static void setThreeMirror(boolean threeMirror) {
+    SpecialCardsSH.threeMirror = threeMirror;
+}
+
+public static boolean isTenBomb() {
+    return tenBomb;
+}
+
+public static void setTenBomb(boolean tenBomb) {
+    SpecialCardsSH.tenBomb = tenBomb;
+}
    
 }

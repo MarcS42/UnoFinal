@@ -282,13 +282,14 @@ public class ShitHead {
 
             }
             
-            if (tenBomb(prev)) {
-                setPlayer(player);
-                System.out.println(player.getName() + " Bombed DiscardPile");
-                prev = playNext();
-                draw();
-           
-            }
+//            if (tenBomb(prev)) {
+//                setPlayer(player);
+//                System.out.println(player.getName() + " Bombed DiscardPile");
+//                prev = playNext();
+//                draw();
+//                player = nextPlayer(player);
+//           
+//            }
         }//End actions for previous card = Special
 
         Card next = player.play(this, prev);
@@ -297,12 +298,19 @@ public class ShitHead {
             player = nextPlayer(player);
             System.out.println(player.getName() + " is CurrentPalayer");
             next = playNext();
+//            if(tenBomb(prev)) 
+//            {
+//            player = nextPlayer(player);
+//            }
         }else 
-        {
+        
+       if(!isTenBomb())
+       {
         discardPile.addCard(next);
         System.out.println(player.getName()+ " plays "+ next);
         System.out.println("");
-        }
+       }
+        setTenBomb(false);
         displayState();
         if(!tenBomb(next)) 
         {
@@ -325,7 +333,12 @@ public class ShitHead {
 
             if(tenBomb(next)) {
                 discardPile.dealAll(bomb);
-                //currentPlayer=nextPlayer
+                setTenBomb(true);
+                setPlayer(player);
+                System.out.println(player.getName() + " Bombed DiscardPile");
+                prev = playNext();
+                displayState();
+                player = nextPlayer(player);
             }
 
         }//End special card next
@@ -459,20 +472,22 @@ public class ShitHead {
      /*    Looking for not special HCards */
             for(int i = 0; i < player.getHand().size(); i++) {
                 if(card == null) {
-                    Card chkCard = player.getHCards().get(i);
+                    Card chkCard = player.getHand().getCard(i);
                     if(!specialCardNt7SH(chkCard)) {
                         card = player.getHand().popCard(i);
                         System.out.println("Player "+ player.getName()+
                                 " plays "+ card);
                         discardPile.addCard(card);
                         draw();
+                        i = player.getHand().size()+1; //short circuit for loop
                 } else {
                     continue;
                 }
                     if(specialCardNt7SH(card))/*only get here if Hand only 
                                    has 1 card and it is special
                                    problem is 'continue' step above that 
-                                   would drive you into looking at RCards*/
+                                   would drive you into looking at RCards
+                                   Could be ***DEAD Code***/
                     {
                         System.out.println("Player "+ player.getName()+
                                 " plays "+ card);
@@ -480,15 +495,18 @@ public class ShitHead {
                         draw();
                         return card;
                     }
-            }
-
-   /*     if Player only has special Hcards    */
-            if(card == null) {
-                card = player.getHand().popCard(0);
+            }//end if(card==null)
+          }// End for loop
+  /*     if Player only has special Hcards    */
+          if((card == null) && player.getHand().size() > 0) 
+            {
+                card = player.getHand().
+                        popCard(player.getHand().size()-1);
                 discardPile.addCard(card);
                 draw();
             }
-            return card;
+           
+         return card;
         }// End !Hand.empty().
             
         if(!player.getRiver().empty()) {
@@ -503,16 +521,30 @@ public class ShitHead {
                         draw();
                     } else {
                         continue;
-                    }
+                       }
+//                    if(specialCardNt7SH(card))/*only get here if River only 
+//                        has 1 card and it is special
+//                        problem is 'continue' step above that 
+//                        would drive you into looking at Hole cards*/
+//                     {
+//                         System.out.println("Player "+ player.getName()+
+//                                 " plays "+ card);
+//                         discardPile.addCard(card);
+//                         draw();
+//                         return card;
+//                     }
                 }
 
                 // if Player does not have special river cards
-                if(card == null) {
-                    card = player.getRiver().popCard(0);
+                if(!specialCardNt7SH(card)) 
+                {
+                    card = player.getRiver().popCard(player.getRiver().size()-1);
                     discardPile.addCard(card);
+                    System.out.println("Player "+ player.getName()+
+                          " plays "+ card);
                     draw();
                 }
-            }
+            }// End for Loop
             return card;
         }// End !river.empty().
 
@@ -520,10 +552,10 @@ public class ShitHead {
         int i = rand.nextInt(player.getHole().size()+1);
         card = player.getHole().getCard(i);
         discardPile.addCard(card);
-
-      } //End pickRandom Hole card
-      return card;  
+       return card;
     }// End playNext().
+        
+
     
 
     public void playGame() {
