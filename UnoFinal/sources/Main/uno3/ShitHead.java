@@ -147,21 +147,24 @@ public class ShitHead {
      * Is player out of cards?
      * Yes => remove from players AL
      * Print "player done"
-     * @return
+     * @return isGameOver?
      */
     public boolean isDone() {
         for (int i = 0; i < players.size(); i++) {
-            if (player.getHand().empty() && 
-                    player.getRiver().empty() && 
-                      player.getHole().empty()) {
+            if (players.get(i).getHand().empty() && 
+                    players.get(i).getRiver().empty() && 
+                       players.get(i).getHole().empty()) 
+            {
                 System.out.println("Player " + 
                         players.get(i).getName() + " is done.");
                 players.remove(i);
             }
-            if(players.size() <= 1) {
+            if(players.size() <= 1) 
+                {
                 System.out.println("Player " + 
-                        players.get(i).getName() + " is a ShitHead!");
-                return true; }
+                        players.get(0).getName() + " is a ShitHead!");
+                return true; 
+                }
         }
         return false;
     }// End isDone()?
@@ -277,19 +280,11 @@ public class ShitHead {
         if(specialCardSH(prev)) {
 
             if (threeMirror(prev)) {
-                if(discardPile.size() > 2)
-                setPrevCard(discardPile.getCard(discardPile.size()-2));
-
+                if(discardPile.size() >= 2)
+                setPrevCard(discardPile.getCard(
+                        discardPile.size()-2));
             }
             
-//            if (tenBomb(prev)) {
-//                setPlayer(player);
-//                System.out.println(player.getName() + " Bombed DiscardPile");
-//                prev = playNext();
-//                draw();
-//                player = nextPlayer(player);
-//           
-//            }
         }//End actions for previous card = Special
 
         Card next = player.play(this, prev);
@@ -298,10 +293,6 @@ public class ShitHead {
             player = nextPlayer(player);
             System.out.println(player.getName() + " is CurrentPalayer");
             next = playNext();
-//            if(tenBomb(prev)) 
-//            {
-//            player = nextPlayer(player);
-//            }
         }else 
         
        if(!isTenBomb())
@@ -330,7 +321,7 @@ public class ShitHead {
 //            if (threeMirror(next)) {
 //                
 //            }
-
+   /*************Fix double 10Bombs************/
             if(tenBomb(next)) {
                 discardPile.dealAll(bomb);
                 setTenBomb(true);
@@ -344,6 +335,97 @@ public class ShitHead {
         }//End special card next
 
     } //End takeTurn(PlayerSH)
+
+/**Plays next card when discardPile.empty()
+         * 
+         * needs to be fixed. Works poorly on special cards/situations
+         * 
+         * @return
+         */
+        public Card playNext() {
+            Card card = null;
+            
+            if(!player.getHand().empty()) {
+         /*    Looking for not special HCards */
+                for(int i = 0; i < player.getHand().size(); i++) {
+                    if(card == null) {
+                        Card chkCard = player.getHand().getCard(i);
+                        if(!specialCardNt7SH(chkCard)) {
+                            card = player.getHand().popCard(i);
+                            System.out.println("Player "+ player.getName()+
+                                    " plays "+ card);
+                            discardPile.addCard(card);
+                            draw();
+                            i = player.getHand().size()+1; //short circuit for loop
+                    } else {
+                        continue;
+                    }
+                        if(specialCardNt7SH(card))/*only get here if Hand only 
+                                       has 1 card and it is special
+                                       problem is 'continue' step above that 
+                                       would drive you into looking at RCards
+                                       Could be ***DEAD Code***/
+                        {
+                            System.out.println("Player "+ player.getName()+
+                                    " plays "+ card);
+                            discardPile.addCard(card);
+                            draw();
+                            return card;
+                        }
+                }//end if(card==null)
+              }// End for loop
+                
+      /*     if Player only has special Hcards    */
+              if((card == null) && !player.getHand().empty()) 
+                {
+                    card = player.getHand().
+                            popCard(player.getHand().size()-1);
+                    System.out.println("Player "+ player.getName()+
+                            " plays "+ card);
+                    discardPile.addCard(card);
+                    draw();
+                }
+               
+             return card;
+            }// End PlayeNext.!Hand.empty().
+                
+            if(!player.getRiver().empty()) {
+                for(int i = 0; i < player.getRiver().size(); i++) {
+                    if(card == null) {
+                        Card chkCard = player.getRCards().get(i);
+                        if(specialCardSH(chkCard)) {
+                            card = player.getRiver().popCard(i);
+                            System.out.println("Player "+ player.getName()+
+                                    " plays "+ card);
+                            discardPile.addCard(card);
+                            draw();
+                        } else {
+                            continue;
+                           }
+                    }// End (Rcard == null)
+    
+                 // if Player does not have special river cards
+                    if(!specialCardNt7SH(card)) 
+                    {
+                        card = player.getRiver().popCard(player.getRiver().size()-1);
+                        discardPile.addCard(card);
+                        System.out.println("Player "+ player.getName()+
+                              " plays "+ card);
+                        draw();
+                    }
+                }// End for Loop
+                return card;
+            }// End PlayeNext.!river.empty().
+    
+            Random rand = new Random();
+            int i = rand.nextInt(player.getHole().size());
+            card = player.getHole().getCard(i);
+            System.out.println("Player "+ player.getName()+
+                    " plays "+ card);
+            discardPile.addCard(card);
+            draw();
+           return card;
+        }// End playNext().
 
 /**OptimizeRiver()
  * For each Player:
@@ -459,105 +541,6 @@ public class ShitHead {
         }  
     }// End playFirstCard().
     
-    /**Plays next card when discardPile.empty()
-     * 
-     * needs to be fixed. Works poorly on special cards/situations
-     * 
-     * @return
-     */
-    public Card playNext() {
-        Card card = null;
-        
-        if(!player.getHand().empty()) {
-     /*    Looking for not special HCards */
-            for(int i = 0; i < player.getHand().size(); i++) {
-                if(card == null) {
-                    Card chkCard = player.getHand().getCard(i);
-                    if(!specialCardNt7SH(chkCard)) {
-                        card = player.getHand().popCard(i);
-                        System.out.println("Player "+ player.getName()+
-                                " plays "+ card);
-                        discardPile.addCard(card);
-                        draw();
-                        i = player.getHand().size()+1; //short circuit for loop
-                } else {
-                    continue;
-                }
-                    if(specialCardNt7SH(card))/*only get here if Hand only 
-                                   has 1 card and it is special
-                                   problem is 'continue' step above that 
-                                   would drive you into looking at RCards
-                                   Could be ***DEAD Code***/
-                    {
-                        System.out.println("Player "+ player.getName()+
-                                " plays "+ card);
-                        discardPile.addCard(card);
-                        draw();
-                        return card;
-                    }
-            }//end if(card==null)
-          }// End for loop
-  /*     if Player only has special Hcards    */
-          if((card == null) && player.getHand().size() > 0) 
-            {
-                card = player.getHand().
-                        popCard(player.getHand().size()-1);
-                discardPile.addCard(card);
-                draw();
-            }
-           
-         return card;
-        }// End !Hand.empty().
-            
-        if(!player.getRiver().empty()) {
-            for(int i = 0; i < player.getRiver().size(); i++) {
-                if(card == null) {
-                    Card chkCard = player.getRCards().get(i);
-                    if(specialCardSH(chkCard)) {
-                        card = player.getRiver().popCard(i);
-                        System.out.println("Player "+ player.getName()+
-                                " plays "+ card);
-                        discardPile.addCard(card);
-                        draw();
-                    } else {
-                        continue;
-                       }
-//                    if(specialCardNt7SH(card))/*only get here if River only 
-//                        has 1 card and it is special
-//                        problem is 'continue' step above that 
-//                        would drive you into looking at Hole cards*/
-//                     {
-//                         System.out.println("Player "+ player.getName()+
-//                                 " plays "+ card);
-//                         discardPile.addCard(card);
-//                         draw();
-//                         return card;
-//                     }
-                }
-
-                // if Player does not have special river cards
-                if(!specialCardNt7SH(card)) 
-                {
-                    card = player.getRiver().popCard(player.getRiver().size()-1);
-                    discardPile.addCard(card);
-                    System.out.println("Player "+ player.getName()+
-                          " plays "+ card);
-                    draw();
-                }
-            }// End for Loop
-            return card;
-        }// End !river.empty().
-
-        Random rand = new Random();
-        int i = rand.nextInt(player.getHole().size()+1);
-        card = player.getHole().getCard(i);
-        discardPile.addCard(card);
-       return card;
-    }// End playNext().
-        
-
-    
-
     public void playGame() {
 
         //keep playing until there's a winner (no cards left in hand)

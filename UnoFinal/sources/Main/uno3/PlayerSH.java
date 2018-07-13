@@ -145,7 +145,7 @@ public class PlayerSH {
             }// End !river.empty()
 
             Random rand = new Random();
-            int i = rand.nextInt(hole.size()+1);
+            int i = rand.nextInt(hole.size());
             if(cardsPlayableRankSH(prev, hole.getCard(i))) {
                 return hole.popCard(i);
             }//End pickRandom Hole card
