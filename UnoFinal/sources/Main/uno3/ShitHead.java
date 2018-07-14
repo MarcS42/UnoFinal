@@ -155,14 +155,15 @@ public class ShitHead {
                     players.get(i).getRiver().empty() && 
                        players.get(i).getHole().empty()) 
             {
-                System.out.println("Player " + 
-                        players.get(i).getName() + " is done.");
+                System.out.println("**********Player " + 
+                        players.get(i).getName() + " is done.**********");
                 players.remove(i);
             }
             if(players.size() <= 1) 
                 {
-                System.out.println("Player " + 
-                        players.get(0).getName() + " is a ShitHead!");
+                System.out.println("***********Player " + 
+                        players.get(0).getName() + " is a "
+                                + "ShitHead!**********\n" + "********Game Over!*********");
                 return true; 
                 }
         }
@@ -291,7 +292,7 @@ public class ShitHead {
         if(next==(null)) {
             System.out.println(player.getName() + " picked up DiscardPile.");
             player = nextPlayer(player);
-            System.out.println(player.getName() + " is CurrentPalayer");
+            System.out.println(player.getName() + " is CurrentPlayer");
             next = playNext();
         }else 
         
@@ -329,7 +330,14 @@ public class ShitHead {
                 System.out.println(player.getName() + " Bombed DiscardPile");
                 prev = playNext();
                 displayState();
+                if(!tenBomb(prev)) {
                 player = nextPlayer(player);
+                } else {
+                    discardPile.dealAll(bomb);
+                    setTenBomb(true);
+                    setPlayer(player);
+                    System.out.println(player.getName() + " Bombed DiscardPile");
+                }
             }
 
         }//End special card next
@@ -403,17 +411,19 @@ public class ShitHead {
                             continue;
                            }
                     }// End (Rcard == null)
-    
-                 // if Player does not have special river cards
-                    if(!specialCardNt7SH(card)) 
-                    {
-                        card = player.getRiver().popCard(player.getRiver().size()-1);
-                        discardPile.addCard(card);
-                        System.out.println("Player "+ player.getName()+
-                              " plays "+ card);
-                        draw();
-                    }
                 }// End for Loop
+                
+                /*     if Player only has !special Rcards    */
+                if((card == null) && !player.getRiver().empty()) 
+                  {
+                      card = player.getRiver().
+                              popCard(player.getRiver().size()-1);
+                      System.out.println("Player "+ player.getName()+
+                              " plays "+ card);
+                      discardPile.addCard(card);
+                      draw();
+                  }
+                
                 return card;
             }// End PlayeNext.!river.empty().
     
