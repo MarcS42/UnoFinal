@@ -293,7 +293,7 @@ public class Uno {
     /**Second of 2 main side methods that takes you out
      * of standard play waterfall when a D2 is played.
      * 
-     * card PREV was DrawTwo checks if next player has D2, 
+     * card PREV was DrawTwo. checks if next player has D2, 
      * if not draws2;
      * if so, plays D2, moves on to check following player
      * (more than two D2's in a row) and keeps track of how many D2s have 
@@ -307,9 +307,9 @@ public class Uno {
             boolean d2MatchCheck = false;
             int i = 0;
             int counter = 0;
-            do {// This do-loop is effectively a for(i;condition;i++) loop 
+            do {// This do-loop is effectively a for(i;condition;i--) loop 
                 // looking for D2s in hand
-                if (counter == 0) {
+                if (counter == 0) {//counter allows pump priming to start loop
                     i = player.getHand().size() - 1;
                 }
 

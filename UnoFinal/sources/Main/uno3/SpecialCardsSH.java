@@ -1,7 +1,11 @@
 package Main.uno3;
 
-public class SpecialCardsSH {
+public class SpecialCardsSH extends Card {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private static boolean specialCardSH;
     private static boolean specialCardNt7SH;
     private static boolean twoReset;
@@ -9,6 +13,27 @@ public class SpecialCardsSH {
     private static boolean tenBomb;
     private static boolean sevenPlayLowerCard;
     private static boolean fourOfaKindBomb;
+    
+    
+//    public static Card getThreeC() {
+//        Card threeC = new Card(3,0,true);
+//        return threeC;
+//    }
+//    
+//    public static Card getThreeD() {
+//        Card threeD = new Card(3,1,true);
+//        return threeD;
+//    }
+//    
+//    public static Card getThreeH() {
+//        Card threeH = new Card(3,2,true);
+//        return threeH;
+//    }
+//    
+//    public static Card getThreeS() {
+//        Card threeS = new Card(3,3,true);
+//        return threeS;
+//    }
     
     /**
     * SpecialCard true/false    
@@ -97,5 +122,10 @@ public static boolean isTenBomb() {
 public static void setTenBomb(boolean tenBomb) {
     SpecialCardsSH.tenBomb = tenBomb;
 }
+
+static Card threeC;
+static Card threeD;
+static Card threeH;
+static Card threeS;
    
-}
+}//End class SpecialCardSH 

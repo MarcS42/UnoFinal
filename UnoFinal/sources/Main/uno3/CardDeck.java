@@ -63,7 +63,7 @@ public class CardDeck implements Serializable{
     public static CardDeck cloneDeck(CardDeck deck) {
         ArrayList<Card> deckCopy = new ArrayList<>();
         CardDeck deckClone = new CardDeck("DeckCopy", deckCopy);
-        for(Card d:deck.getCards()) {
+        for(Card d:deckCopy) {
             deckClone.getCards().add(d);
         }
         serializeCardDeck(deckClone);
@@ -118,6 +118,7 @@ public static CardDeck deserializeCardDeck() {
        }
    System.out.println();
    }
+   
    /** Deal(that,n) Removes n cards from 
     * this.CardDeck, and
     *  adds n cards to that.CardHand

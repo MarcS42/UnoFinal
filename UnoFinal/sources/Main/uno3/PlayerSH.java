@@ -152,7 +152,125 @@ public class PlayerSH {
      return null;
     } // End searchForMatch
 
-//++++++++++++++++ Helper Methods +++++++++++   
+/**Plays next card when discardPile.empty()
+             * 
+             * needs to be fixed. Works poorly on special cards/situations
+             * 
+             * @param shitHead TODO
+     * @return
+             */
+            public Card playNext(ShitHead shitHead) {
+                Card card = null;
+                
+                if(!hand.empty()) {
+             /*    Looking for not special HCards */
+                    for(int i = 0; i < hand.size(); i++) {
+                        if(card == null) {
+                            Card chkCard = hand.getCard(i);
+                            if(!specialCardNt7SH(chkCard)) {
+                                card = hand.popCard(i);
+                                System.out.println("Player "+ name +
+                                        " plays "+ card);
+                                shitHead.discardPile.addCard(card);
+                                shitHead.draw();
+                                i = hand.size()+1; //short circuit for loop
+                        } else {
+                            continue;
+                        }
+                    }//end if(card==null)
+                  }// End for loop
+                    
+          /*     if Player only has special Hcards    */
+                  if((card == null) && !hand.empty()) 
+                    {
+                        card = hand.popCard(hand.size()-1);
+                        System.out.println("Player "+ name +
+                                " plays "+ card);
+                        shitHead.discardPile.addCard(card);
+                        shitHead.draw();
+                    }
+                   
+                 return card;
+                }// End PlayeNext.!Hand.empty().
+                    
+                if(!river.empty()) {
+                    for(int i = 0; i < river.size(); i++) {
+                        if(card == null) {
+                            Card chkCard = getRCards().get(i);
+                            if(specialCardSH(chkCard)) {
+                                card = river.popCard(i);
+                                System.out.println("Player "+ name +
+                                        " plays "+ card);
+                                shitHead.discardPile.addCard(card);
+                                shitHead.draw();
+                            } else {
+                                continue;
+                               }
+                        }// End (Rcard == null)
+                    }// End for Loop
+                    
+                    /*     if Player only has !special Rcards    */
+                    if((card == null) && !river.empty()) 
+                      {
+                          card = river.popCard(river.size()-1);
+                          System.out.println("Player "+ name +
+                                  " plays "+ card);
+                          shitHead.discardPile.addCard(card);
+                          shitHead.draw();
+                      }
+                    
+                    return card;
+                }// End PlayeNext.!river.empty().
+                
+  /*Problem when last hole card is a tenBomb. Leads to trying 
+   * to play another card when do not have any left*/      
+              if(!hole.empty()) {
+                Random rand = new Random();
+                int i = rand.nextInt(hole.size());
+                card = hole.getCard(i);
+                System.out.println("Player "+ name +
+                        " plays "+ card);
+                shitHead.discardPile.addCard(card);
+                shitHead.draw();
+               return card;
+              }
+              return null;
+            }//End playNext(SH)
+
+            public static boolean playerHas3MHcards(PlayerSH player) {
+
+                if(player.getHCards().contains(threeC) ||
+                        player.getHCards().contains(threeD) ||
+                        player.getHCards().contains(threeH) ||
+                        player.getHCards().contains(threeS))
+                {
+                    return true;}
+                return false;
+            }
+
+            public static boolean playerHas3MRcards(PlayerSH player) {
+
+                if(player.getRCards().contains(threeC) ||
+                        player.getRCards().contains(threeD) ||
+                        player.getRCards().contains(threeH) ||
+                        player.getRCards().contains(threeS))
+                {
+                    return true;}
+                return false;
+            }
+
+            public static boolean playerHas3MHolecards(PlayerSH player) {
+
+                if(player.getHoleCards().contains(threeC) ||
+                        player.getHoleCards().contains(threeD) ||
+                        player.getHoleCards().contains(threeH) ||
+                        player.getHoleCards().contains(threeS))
+                {
+                    return true;}
+                return false;
+            }
+            
+    //++++++++++++++++ Helper Methods +++++++++++   
     /**
      * Gets the player's name
      * 
@@ -186,4 +304,9 @@ public class PlayerSH {
     public CardHand getHole() {
         return hole;
     }
+    
+    public ArrayList<Card> getHoleCards() {
+        return getHole().getCards();
+    }
+    
 }//End PlayerSH
