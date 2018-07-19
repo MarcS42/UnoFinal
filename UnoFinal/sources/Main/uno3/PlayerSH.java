@@ -233,8 +233,12 @@ public class PlayerSH {
                 shitHead.discardPile.addCard(card);
                 shitHead.draw();
                return card;
+              } else {
+                  shitHead.player = shitHead.nextPlayer(shitHead.player);
               }
-              return null;
+              System.out.println("Player into playNext = " 
+                      + shitHead.player.getName());
+              return shitHead.player.playNext(shitHead);//needed if last card tenBomb && playerDone
             }//End playNext(SH)
 
             public static boolean playerHas3MHcards(PlayerSH player) {
@@ -267,6 +271,14 @@ public class PlayerSH {
                         player.getHoleCards().contains(threeS))
                 {
                     return true;}
+                return false;
+            }
+            
+            public static boolean playerIsDone(PlayerSH player) {
+              if(player.hand.empty() && player.river.empty() && 
+                      player.hole.empty()) {
+                  return true;
+              }
                 return false;
             }
             
