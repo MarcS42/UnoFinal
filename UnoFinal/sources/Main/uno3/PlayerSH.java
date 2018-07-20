@@ -69,7 +69,6 @@ public class PlayerSH {
                     
                 if (!specialCardNt7SH(card) && card.getRankAceHi() 
                         <= 11 && cardsPlayableRankSH(prev, card)) { 
-//                    singlePlayable.add(card);
                     return hand.popCard(i);
                 }
             } 
@@ -144,13 +143,22 @@ public class PlayerSH {
              return null;
             }// End !river.empty()
 
-            Random rand = new Random();
-            int i = rand.nextInt(hole.size());
-            if(cardsPlayableRankSH(prev, hole.getCard(i))) {
-                return hole.popCard(i);
-            }//End pickRandom Hole card
+            pickRandomHoleCard(prev);
      return null;
     } // End searchForMatch
+
+    /**
+     * @param prev
+     * @return 
+     */
+    public Card pickRandomHoleCard(Card prev) {
+        Random rand = new Random();
+        int i = rand.nextInt(hole.size());
+        if(cardsPlayableRankSH(prev, hole.getCard(i))) {
+            return hole.popCard(i);
+        }//End pickRandom Hole card
+        return null;
+    }
 
 /**Plays next card when discardPile.empty()
              * 
