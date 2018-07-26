@@ -110,6 +110,8 @@ public class PlayerSH {
     } // End searchForMatch********************
 
     /**pickRandomHoleCard removes the selected card from Hole if it's playable.
+     * 
+     * add handler for case where 3 hole cards are all tenBombs
      * @param prev card to match
      * @return 
      */
@@ -126,7 +128,7 @@ public class PlayerSH {
     }
 
     /**Plays next card when discardPile.empty()
-     * 
+     * Add handler for playNext call when player isDone
      * 
      * @param shitHead TODO
      * @return

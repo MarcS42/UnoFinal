@@ -357,6 +357,13 @@ public class ShitHead {
     } //End takeTurn(PlayerSH)
         
         
+        /**Fix tenBomb code
+         * Fix lots of Red in coverage runs
+         * Are Loops 2/4 really necessary?
+         * @param player
+         * @param tgtMatch
+         * @return
+         */
         public PlayerSH threeMirrorPlay(PlayerSH player, Card tgtMatch) {
 
             boolean threeMsMatchChK = true;
