@@ -133,8 +133,8 @@ public class ShitHead {
     public void displayState() {
         System.out.println("");
         System.out.println("State Variables: ");
-        System.out.println("FourOfaKind: " + fourOfaKind + "; FirstPass: " + firstPass + 
-                "; \nCurrent Player: " + player.getName() + "; Debug: " + debug + 
+        System.out.println( 
+                " \nCurrent Player: " + player.getName() + "; Debug: " + debug + 
                 "; Card prev: " + prev);
         
         System.out.println("NextPlayer = " + nextPlayer(player).getName());
@@ -154,8 +154,8 @@ public class ShitHead {
         System.out.println("Discard Pile:");
         if(discardPile != null) {
             int dPSize = discardPile.size();
-            if(dPSize > 10) {
-                for(int i= dPSize - 10; i <= dPSize-1; i++) {
+            if(dPSize > 15) {
+                for(int i= dPSize - 15; i <= dPSize-1; i++) {
                     Card.printCard(discardPile.getCard(i));
                 }
                 System.out.println("");    
@@ -211,11 +211,12 @@ public class ShitHead {
             player.getHand().addCard(drawCard);
         } else
         
-        if(drawPile.empty() || player.getHand().size()
-                >= handSize) 
+        if(drawPile.empty())
         {
-        System.out.println("DrawPile is empty/"
-                + "Player has plenty Hand Cards: ");
+            System.out.println("");
+        }else
+        {
+        System.out.println("Player has plenty Hand Cards: ");
         }
     } // End draw()
     
@@ -247,367 +248,367 @@ public class ShitHead {
         *   player.
          * 
          */
-        public void takeTurn() {
-            
-            /**
-             * Start firstPass
-             * 
-             */
-            if(isFirstPass()) {
-                optimizeRiver();
-                pickFirstPlayer();
-                playFirstCard();
-                player = nextPlayer(player);
-                setFirstPass(false);
-                displayState();
-            }
-            
-       /**
-        * Problem is if players last hole card is tenBomb.
-        * Discard Pile.size()= 0, yet game is still trying to
-        * get tenBomb player to playNext()     
-        */
-            if(!PlayerSH.playerIsDone(player)) {
-            System.out.println("Player into TakeTurn() = " 
-                   + player.getName());
-            } else {
-                player = nextPlayer(player);
-                System.out.println("Player into TakeTurn() = " 
-                        + player.getName());
-                player.playNext(this);//needed if last card tenBomb && playerDone
-                player = nextPlayer(player);
-                System.out.println("Next Player into TakeTurn() = " 
-                        + player.getName());
-            }
-            
-            if(!discardPile.empty()) {
-                prev = discardPile.last();
-            }else {prev = player.playNext(this);}
-    
-            /**
-             * Start actions for previous card = Special
-             */
-            if(specialCardSH(prev)) {
-    
-                if (threeMirror(prev) && discardPile.size() >= 2) 
-                {
-                    
-                    Card tgtMatch = discardPile.getCard(discardPile.size()-2);
-                    threeMirrorPlay(player, tgtMatch);
-                    
-                    player=nextPlayer(player);
-                    System.out.println("Player " + player.getName() +
-                            " is next player: ");
-//                    displayState();
-                }
-                
-            }//End actions for previous card = Special
-    
-            Card next = player.play(this, prev);
-            if(next==(null)) {
-                System.out.println(player.getName() + " picked up DiscardPile.");
-                player = nextPlayer(player);
-                System.out.println(player.getName() + " is CurrentPlayer");
-                next = player.playNext(this);
-            }else 
-            
-           if(!isTenBomb())
-           {
-            discardPile.addCard(next);
-            System.out.println(player.getName()+ " plays "+ next);
-            System.out.println("");
-           }
-            setTenBomb(false);
-            displayState();
-            if(!tenBomb(next)) 
-            {
+    public void takeTurn() {
+
+        /**
+         * Start firstPass
+         * 
+         */
+        if(isFirstPass()) {
+            optimizeRiver();
+            pickFirstPlayer();
+            playFirstCard();
             player = nextPlayer(player);
+            setFirstPass(false);
+            displayState();
+        }
+
+        /**
+         * Problem is if players last hole card is tenBomb.
+         * Discard Pile.size()= 0, yet game is still trying to
+         * get tenBomb player to playNext()     
+         */
+        if(!PlayerSH.playerIsDone(player)) {
+            System.out.println("Player into TakeTurn() = " 
+                    + player.getName());
+        } else {
+            player = nextPlayer(player);
+            System.out.println("Player into TakeTurn()#2 = " 
+                    + player.getName());
+            player.playNext(this);//needed if last card tenBomb && playerDone
+            player = nextPlayer(player);
+            System.out.println("Next Player into TakeTurn()#3 = " 
+                    + player.getName());
+        }
+
+        if(!discardPile.empty()) {
+            prev = discardPile.last();
+        }else {prev = player.playNext(this);}
+
+        /**
+         * Start actions for previous card = Special
+         */
+        if(specialCardNt7SH(prev)) {
+
+            if (threeMirror(prev) && discardPile.size() >= 2) 
+            {
+
+                Card tgtMatch = discardPile.getCard(discardPile.size()-2);
+                threeMirrorPlay(player, tgtMatch);
+
+                player=nextPlayer(player);
+                System.out.println("Player out 3Mirror " + player.getName() +
+                        " is next player: ");
             }
-    
-    
-    
-            /**
-             * Actions needed when NEXT card is special card
-             */
-            if (specialCardSH(next)) {
-                
-       /*************Fix double 10Bombs************/
-                if(tenBomb(next)) {
-                    discardPile.dealAll(bomb);
-                    setTenBomb(true);
-                    setPlayer(player);
-                    System.out.println(player.getName() + " Bombed DiscardPile");
-                 if(!PlayerSH.playerIsDone(player))
-                  {
-                    prev = player.playNext(this);
+
+        }//End actions for previous card = Special
+
+        Card next = player.play(this, prev);
+        if(next==(null)) {
+            System.out.println(player.getName() + " picked up DiscardPile.");
+            player = nextPlayer(player);
+            System.out.println(player.getName() + " is CurrentPlayer");
+            next = player.playNext(this);
+            displayState();
+            player = nextPlayer(player);
+        }else 
+            if(!tenBomb(next))
+            {
+                discardPile.addCard(next);
+                System.out.println(player.getName()+ " plays "+ next);
+                System.out.println("");
+                setTenBomb(false);
+                displayState();
+                player = nextPlayer(player);
+            }
+
+        /**
+         * Actions needed when NEXT card is special card
+         */
+        if (specialCardSH(next)) {
+
+            /*************Fix double 10Bombs************/
+            if(tenBomb(next)) {
+                discardPile.dealAll(bomb);
+                setTenBomb(true);
+                setPlayer(player);
+                System.out.println(player.getName() + " Bombed DiscardPile");
+                if(!PlayerSH.playerIsDone(player))
+                {
+                setPrevCard(player.playNext(this));
                     displayState();
                     if(!tenBomb(prev)) {
-                    player = nextPlayer(player);
-                    } else {
-                        discardPile.dealAll(bomb);
-                        setTenBomb(true);
-                        setPlayer(player);
-                        System.out.println(player.getName() + " Bombed DiscardPile Again!");
+                        player = nextPlayer(player);
+                      } else {
+                          discardPile.dealAll(bomb);
+                          setTenBomb(true);
+                          setPlayer(player);
+                          System.out.println(player.getName() + " Bombed DiscardPile Again with a " + next +"! "
+                                + "!");
+                          displayState();
                     }
-                  }
-                }
-    
-            }//End special card next
-    
-        } //End takeTurn(PlayerSH)
+                } else {
+                System.out.println(player.getName() + " Bombed DiscardPile Again with a " + next +"! "
+                        + "\n And is Done!!");
+                displayState();
+                }//End if(!PlayerSH.playerIsDone(player))
+            }// End if(tenBomb(next))?
+        }//End special card next
+    } //End takeTurn(PlayerSH)
+        
+        
+        public PlayerSH threeMirrorPlay(PlayerSH player, Card tgtMatch) {
 
-       public PlayerSH threeMirrorPlay(PlayerSH player, Card tgtMatch) {
-       int threeMsPlayed = 1;
-       
-       do {  
-           boolean threeMsMatchChK = false;
-            
-         if(!player.getHand().empty()) {
-            
-           /*****Looking for threeMirrors in Hand cards****/
-          if(PlayerSH.playerHas3MHcards(player)) {
-                   
-            do {  
-              for(int i =0;(!threeMsMatchChK && i < player.getHand().size()); i++) 
-               {
-                  /*Problem with searchFor Match is returns Null
-                   * if can,t match
-                   * need to fix
-                   * */
-                Card next = player.searchForMatch(tgtMatch);
-                
-                if(threeMirror(next)) 
+            boolean threeMsMatchChK = true;
+
+            if(!player.getHand().empty()) {
+
+             /*****Looking for threeMirrors in Hand cards****/
+                if(PlayerSH.playerHas3MHcards(player)) {
+
+                    while(threeMsMatchChK) 
+                    {
+                        Card next = player.searchForMatch(tgtMatch);
+
+                        if((next !=null) && threeMirror(next)) 
+                        {
+                            System.out.println("Player " + player.getName() +
+                                    " plays another Lp1 " + next);
+                            discardPile.addCard(next);
+                            draw();
+                            threeMsMatchChK=true;
+                            
+                            setPlayer(nextPlayer(player));
+                            System.out.println("Player " + player.getName() +
+                                    " is next player out 3Match after LP1: ");
+                            displayState();
+                            
+                         continue;
+
+                        }// End if((next !=null) && threeMirror(next))
+
+                        if(next==null) {
+                            discardPile.dealAll(player.getHand());
+                            System.out.println(player.getName() + " picked up DiscardPile.");
+                            player = nextPlayer(player);
+                            System.out.println(player.getName() + " is CurrentPlayer");
+                            next = player.playNext(this);
+
+                            setPrevCard(next);
+                            setPlayer(player);
+                            displayState();
+                            return player;   
+                        }else {//!3mirror and !null
+               
+                            threeMsMatchChK=false;
+                            
+                            System.out.println("Player " + player.getName() +
+                                    " plays " + next);
+                            discardPile.addCard(next);                        
+                            draw();
+                            if(tenBomb(next))
+                            {
+                                System.out.println("Player "+player.getName()+
+                                        " Bombed the discardPile");
+                                discardPile.dealAll(bomb);
+                                player.playNext(this);
+                            }
+
+                            setPrevCard(next);
+                            setPlayer(player);
+                            displayState();
+                            return player;
+                        }//End if(next==null)
+                    }// End while(threeMsMatchChK) loop 1
+                }//End if(hand has 3Mirrors)
+
+           /**** nextPlayer after 1st 3Mirror, never had 3Mirror in HandCards ****/
+                for(int i = 0; i < player.getHand().size(); i++)    
                 {
-                 System.out.println("Player " + player.getName() +
+                    Card next = player.searchForMatch(tgtMatch);
+
+                    if(next==null) {
+                        discardPile.dealAll(player.getHand());
+                        System.out.println(player.getName() + " picked up DiscardPile.");
+                        player = nextPlayer(player);
+                        System.out.println(player.getName() + " is CurrentPlayer");
+                        next = player.playNext(this);
+
+                        setPrevCard(next);
+                        setPlayer(player);
+                        displayState();
+                        return player;   
+                    }//End if(next==null)
+
+                    if(cardsPlayableRankSH(tgtMatch, next))
+                    {                             
+                        System.out.println("Player " + player.getName() +
+                                " plays " + next);
+                        discardPile.addCard(next);
+                        if(tenBomb(next))
+                        {
+                            System.out.println("Player "+player.getName()+
+                                    " Bombed the discardPile");
+                            discardPile.dealAll(bomb);
+                            next = player.playNext(this);
+                        }
+
+
+                        setPrevCard(discardPile.last());
+                        setPlayer(player);
+                        displayState();
+                        return player; 
+                    }// End if(cardsPlayableRankSH(tgtMatch, next)
+                }// End for loop 2
+            }// End if(!player.hand.empty)
+
+            if(!player.getRiver().empty() && player.getHand().empty()) {
+
+                /*****Looking for threeMirrors in River cards****/
+                if(PlayerSH.playerHas3MRcards(player)) {
+
+                    for(int i =0;(!threeMsMatchChK && i < player.getRiver().size()); i++) 
+                    {
+                        Card next = player.searchForMatch(tgtMatch);
+
+                        if((next != null) && threeMirror(next)) 
+                        {
+                            System.out.println("Player " + player.getName() +
+                                    " plays River 3M " + next);
+                            discardPile.addCard(next);                        
+                            draw();
+                            threeMsMatchChK=true;
+
+                            setPlayer(nextPlayer(player));
+                            System.out.println("Player " + player.getName() +
+                                    " is next player: ");
+                            if(!player.getRiver().empty()) {
+                                if(PlayerSH.playerHas3MRcards(player)) {
+
+                                    threeMsMatchChK=false;
+                                    displayState();
+                                    continue;
+                                }
+                            }
+                        }// End if((next != null) && threeMirror(next))
+
+                        if(next==null) {
+                            discardPile.dealAll(player.getHand());
+                            System.out.println(player.getName() + " picked up DiscardPile.");
+                            player = nextPlayer(player);
+                            System.out.println(player.getName() + " is CurrentPlayer");
+                            next = player.playNext(this);
+
+                            setPrevCard(next);
+                            setPlayer(player);
+                            displayState();
+                            return player;   
+                        }else {
+                            System.out.println("Player " + player.getName() +
+                                    " plays " + next);
+                            discardPile.addCard(next);
+                            draw();
+                            if(tenBomb(next))
+                            {
+                                System.out.println("Player "+player.getName()+
+                                        " Bombed the discardPile");
+                                discardPile.dealAll(bomb);
+                                player.playNext(this);
+                            }
+
+                            setPrevCard(next);
+                            setPlayer(player);
+                            displayState();
+                            return player;
+                        }//End if(next==null)
+                    }// End for loop 3
+                }//End if(River has 3Mirrors)
+
+
+                for(int i = 0; i < player.getRiver().size(); i++)    
+                {
+                    Card next = player.searchForMatch(tgtMatch);
+
+                    if(next==null) {
+                        discardPile.dealAll(player.getHand());
+                        System.out.println(player.getName() + " picked up DiscardPile.");
+                        player = nextPlayer(player);
+                        System.out.println(player.getName() + " is CurrentPlayer");
+                        next = player.playNext(this);
+
+                        setPrevCard(next);
+                        setPlayer(player);
+                        displayState();
+                        return player;   
+                    }
+
+                    if(cardsPlayableRankSH(tgtMatch, next))
+                    {                             
+                        System.out.println("Player " + player.getName() +
+                                " plays " + next);
+                        discardPile.addCard(next);
+                        if(tenBomb(next))
+                        {
+                            System.out.println("Player "+player.getName()+
+                                    " Bombed the discardPile");
+                            discardPile.dealAll(bomb);
+                            player.playNext(this);
+                        }
+
+                        setPrevCard(discardPile.last());
+                        setPlayer(player);
+                        displayState();
+                        return player; 
+                    }// End if(cardsPlayableRankSH(tgtMatch, next)
+                }// End for loop 4
+            }// End if(!player.River.empty)
+
+            /****** Playing Hole cards *******/
+            if(player.getHand().empty() && player.getRiver().empty())
+            {
+                Card next = player.pickRandomHoleCard(tgtMatch);
+
+                if(next != null)
+                {                             
+                    System.out.println("Player " + player.getName() +
                             " plays " + next);
-                 discardPile.addCard(next);                        
-                 draw();
-                 threeMsMatchChK=true;
-                    
-                 player = nextPlayer(player);
-                 System.out.println("Player " + player.getName() +
-                         " is next player: ");
-                 if(!player.getHand().empty()) {
-                     if(PlayerSH.playerHas3MHcards(player)) {
-                         
-                         threeMsMatchChK=false;
-                     }
-                 }
-                    
-                }// End if(threeMirror(next)
-                
-                if(next==null) {
+                    discardPile.addCard(next);
+                    if(tenBomb(next))
+                    {
+                        System.out.println("Player "+player.getName()+
+                                " Bombed the discardPile");
+                        discardPile.dealAll(bomb);
+                        if(!PlayerSH.playerIsDone(player)) {
+                            player.playNext(this);
+                        }else {player = nextPlayer(player);
+                        System.out.println(player.getName() + " is CurrentPlayer");
+                        player.playNext(this);
+                        }
+                    }
+
+                    setPrevCard(next);
+                    setPlayer(player);
+                    displayState();
+                    return player;
+
+                }//End if(next != null)
+                else 
+                {
                     discardPile.dealAll(player.getHand());
                     System.out.println(player.getName() + " picked up DiscardPile.");
                     player = nextPlayer(player);
                     System.out.println(player.getName() + " is CurrentPlayer");
-                    next = player.playNext(this);
-                    
+                    next = player.playNext(this); 
+
+
                     setPrevCard(next);
                     setPlayer(player);
+                    displayState();
                     return player;   
-                }else {
-                    System.out.println("Player " + player.getName() +
-                            " plays " + next);
-                 discardPile.addCard(next);                        
-                 draw();
-                 if(tenBomb(next))
-                 {
-                    System.out.println("Player "+player.getName()+
-                            " Bombed the discardPile");
-                    discardPile.dealAll(bomb);
-                    player.playNext(this);
-                 }
-                 
-                 setPrevCard(next);
-                 setPlayer(player);
-                 return player;
                 }//End if(next==null)
-               }// End for loop 1
-            }while(!threeMsMatchChK); 
-           }//End if(hand has 3Mirrors)
-    
-           
-              
-              for(int i = 0; i < player.getHand().size(); i++)    
-              {
-                  Card next = player.searchForMatch(tgtMatch);
-                  
-                  if(next==null) {
-                      discardPile.dealAll(player.getHand());
-                      System.out.println(player.getName() + " picked up DiscardPile.");
-                      player = nextPlayer(player);
-                      System.out.println(player.getName() + " is CurrentPlayer");
-                      next = player.playNext(this);
-                      
-                      setPrevCard(next);
-                      setPlayer(player);
-                      return player;   
-                  }//End if(next==null)
-              
-                if(cardsPlayableRankSH(tgtMatch, next))
-                {                             
-                    System.out.println("Player " + player.getName() +
-                          " plays " + next);
-                  discardPile.addCard(next);
-                  if(tenBomb(next))
-                   {
-                      System.out.println("Player "+player.getName()+
-                              " Bombed the discardPile");
-                      discardPile.dealAll(bomb);
-                      player.playNext(this);
-                   }
-                          
-                  
-                  setPrevCard(discardPile.last());
-                  setPlayer(player);
-                  return player; 
-                }// End if(cardsPlayableRankSH(tgtMatch, next)
-              }// End for loop 2
-         }// End if(!player.hand.empty)
-              
-              if(!player.getRiver().empty() && player.getHand().empty()) {
-                  
-                  /*****Looking for threeMirrors in River cards****/
-                 if(PlayerSH.playerHas3MRcards(player)) {
-                          
-                   do {  
-                     for(int i =0;(!threeMsMatchChK && i < player.getRiver().size()); i++) 
-                      {
-                       Card next = player.searchForMatch(tgtMatch);
-                       
-                       if(threeMirror(next)) 
-                       {
-                        System.out.println("Player " + player.getName() +
-                                   " plays " + next);
-                        discardPile.addCard(next);                        
-                        draw();
-                        threeMsMatchChK=true;
-                           
-                        player = nextPlayer(player);
-                        System.out.println("Player " + player.getName() +
-                                " is next player: ");
-                        if(!player.getRiver().empty()) {
-                            if(PlayerSH.playerHas3MRcards(player)) {
-                                
-                                threeMsMatchChK=false;
-                            }
-                        }
-                       }// End if(threeMirror(next)
-                      
-                       if(next==null) {
-                           discardPile.dealAll(player.getHand());
-                           System.out.println(player.getName() + " picked up DiscardPile.");
-                           player = nextPlayer(player);
-                           System.out.println(player.getName() + " is CurrentPlayer");
-                           next = player.playNext(this);
-                           
-                           setPrevCard(next);
-                           setPlayer(player);
-                           return player;   
-                       }else {
-                           System.out.println("Player " + player.getName() +
-                                   " plays " + next);
-                        discardPile.addCard(next);                        
-                        draw();
-                        if(tenBomb(next))
-                        {
-                           System.out.println("Player "+player.getName()+
-                                   " Bombed the discardPile");
-                           discardPile.dealAll(bomb);
-                           player.playNext(this);
-                        }
-                        
-                        setPrevCard(next);
-                        setPlayer(player);
-                        return player;
-                       }//End if(next==null)
-                      }// End for loop 3
-                   }while(!threeMsMatchChK); 
-                  }//End if(River has 3Mirrors)
-                    
-                  
-                 for(int i = 0; i < player.getRiver().size(); i++)    
-                 {
-                     Card next = player.searchForMatch(tgtMatch);
-                     
-                     if(next==null) {
-                         discardPile.dealAll(player.getHand());
-                         System.out.println(player.getName() + " picked up DiscardPile.");
-                         player = nextPlayer(player);
-                         System.out.println(player.getName() + " is CurrentPlayer");
-                         next = player.playNext(this);
-                         
-                         setPrevCard(next);
-                         setPlayer(player);
-                         return player;   
-                     }
-                 
-                   if(cardsPlayableRankSH(tgtMatch, next))
-                   {                             
-                       System.out.println("Player " + player.getName() +
-                             " plays " + next);
-                     discardPile.addCard(next);
-                     if(tenBomb(next))
-                      {
-                         System.out.println("Player "+player.getName()+
-                                 " Bombed the discardPile");
-                         discardPile.dealAll(bomb);
-                         player.playNext(this);
-                      }
-                             
-                     setPrevCard(discardPile.last());
-                     setPlayer(player);
-                     return player; 
-                   }// End if(cardsPlayableRankSH(tgtMatch, next)
-                 }// End for loop 4
-              }// End if(!player.River.empty)
-              
-              if(player.getHand().empty() && player.getRiver().empty())
-              {Card next = player.pickRandomHoleCard(tgtMatch);
-              if(next == null)
-                { discardPile.dealAll(player.getHand());
-                System.out.println(player.getName() + " picked up DiscardPile.");
-                player = nextPlayer(player);
-                System.out.println(player.getName() + " is CurrentPlayer");
-                next = player.playNext(this);
-                
-                setPrevCard(next);
-                setPlayer(player);
-                return player;} 
-              else {
-                  System.out.println("Player " + player.getName() +
-                          " plays " + next);
-                  discardPile.addCard(next);
-                  if(tenBomb(next))
-                   {
-                      System.out.println("Player "+player.getName()+
-                              " Bombed the discardPile");
-                      discardPile.dealAll(bomb);
-                      if(!PlayerSH.playerIsDone(player))
-                        player.playNext(this);
-                   }
-                  
-                  setPrevCard(next);
-                  setPlayer(player);
-                  return player;   
-              }//End if(next==null)
-             }//End Hand.empty() && River.empty()
-              
-              discardPile.dealAll(player.getHand());
-              System.out.println(player.getName() + " picked up DiscardPile.");
-              player = nextPlayer(player);
-              System.out.println(player.getName() + " is CurrentPlayer");
-              Card next = player.playNext(this);
-              
-              setPrevCard(next);
-              setPlayer(player);
-              return player;
-          
-     } 
-         while(threeMsPlayed >=1);
-       
-    }//End method
+            }//End Hand.empty() && River.empty()
+            return player;  
+        }//End method threeMirrorPlay(PlayerSH player, Card tgtMatch)
         
     /**OptimizeRiver()
          * For each Player:
@@ -727,6 +728,21 @@ public class ShitHead {
         int indexNextPlayer;
         indexNextPlayer = (players.indexOf(currentPlayer)+1) % players.size();
         return players.get(indexNextPlayer);
+    }
+    
+    public boolean cardCountMoreThan52() {
+        int playerSum, playersSum=0, ShSum;
+        for(PlayerSH p:players) {
+            playerSum=p.getHand().size()+
+                    p.getRiver().size()+p.getHole().size();
+            playersSum=+playerSum;
+        }
+        ShSum = bomb.size()+discardPile.size()+
+                drawPile.size();
+        if(playersSum+ShSum > 52) {
+           return true; 
+        }
+        return false;
     }
   //***************************************************
     

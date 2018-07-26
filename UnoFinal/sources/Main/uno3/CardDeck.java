@@ -154,6 +154,18 @@ public static CardDeck deserializeCardDeck() {
            }
        }
 
+    /**Removes AL cards(card), and shifts all cards 
+     * above it to the left
+     * 
+     * 
+     * 
+     * @param card tgt card in ArrayList
+     * @return card removed from specific index posit.
+     */
+ public Card popCard(Card card) { 
+        return cards.remove(cards.indexOf(card));
+    }
+    
     /**Removes AL card[i], and shifts all cards 
         * above it to the left
         * 

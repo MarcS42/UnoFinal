@@ -15,26 +15,6 @@ public class SpecialCardsSH extends Card {
     private static boolean fourOfaKindBomb;
     
     
-//    public static Card getThreeC() {
-//        Card threeC = new Card(3,0,true);
-//        return threeC;
-//    }
-//    
-//    public static Card getThreeD() {
-//        Card threeD = new Card(3,1,true);
-//        return threeD;
-//    }
-//    
-//    public static Card getThreeH() {
-//        Card threeH = new Card(3,2,true);
-//        return threeH;
-//    }
-//    
-//    public static Card getThreeS() {
-//        Card threeS = new Card(3,3,true);
-//        return threeS;
-//    }
-    
     /**
     * SpecialCard true/false    
     * @param card
@@ -74,7 +54,8 @@ public class SpecialCardsSH extends Card {
    public static boolean threeMirror(Card card) {
        threeMirror = false;
        if(card.getRankAceHi() == 3) {
-           return true;
+           threeMirror = true;
+           return threeMirror;
        }
        return threeMirror;
    }
@@ -82,7 +63,8 @@ public class SpecialCardsSH extends Card {
    public static boolean tenBomb(Card card) {
        tenBomb = false;
        if(card.getRankAceHi() == 10) {
-           return true;
+           tenBomb = true;
+           return tenBomb;
        }
        return tenBomb;
    }
@@ -90,7 +72,8 @@ public class SpecialCardsSH extends Card {
    public static boolean sevenPlayLowerCard(Card card) {
        sevenPlayLowerCard = false;
        if(card.getRankAceHi() == 7) {
-           return true;
+           sevenPlayLowerCard = true;
+           return sevenPlayLowerCard;
        }
        return sevenPlayLowerCard;
    }
