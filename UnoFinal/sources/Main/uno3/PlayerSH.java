@@ -117,15 +117,22 @@ public class PlayerSH {
      */
     public Card pickRandomHoleCard(Card prev) {
         Random rand = new Random();
+        
+        if(!playerIsDone(this))
+        {
         int i = rand.nextInt(hole.size());
-        Card next = hole.getCard(i);
-        if(cardsPlayableRankSH(prev, next)) {
-            System.out.println("Player "+ name +
-                    " plays HoleCard "+ next);
-            return hole.popCard(i);
-        }//End pickRandom Hole card
-      return null;
-    }
+        
+            Card next = hole.getCard(i);
+            if(cardsPlayableRankSH(prev, next)) {
+                System.out.println("Player "+ name +
+                        " plays HoleCard "+ next);
+                return hole.popCard(i);
+            }
+        } else {
+        System.out.println("Player "+ this.name + " is Done!");
+        }
+        return null;
+    }//End pickRandom Hole card
 
     /**Plays next card when discardPile.empty()
      * Add handler for playNext call when player isDone
