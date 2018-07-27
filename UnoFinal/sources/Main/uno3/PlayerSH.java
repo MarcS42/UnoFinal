@@ -122,7 +122,7 @@ public class PlayerSH {
         {
         int i = rand.nextInt(hole.size());
         
-            Card next = hole.getCard(i);
+        Card next = hole.getCard(i);
             if(cardsPlayableRankSH(prev, next)) {
                 System.out.println("Player "+ name +
                         " plays HoleCard "+ next);

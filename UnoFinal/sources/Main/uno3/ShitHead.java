@@ -3,7 +3,7 @@
  */
 package Main.uno3;
 
-//*****Fix takeTurn() and fourOfaKindAL and player plays > 1 card ************
+//*****Fix fourOfaKindAL and player plays > 1 card ************
 import static Main.uno3.SpecialCardsSH.*;
 //import static Main.uno3.Card.cardsPlayableRankSH;
 import static Main.uno3.Card.*;
@@ -329,38 +329,48 @@ public class ShitHead {
          */
         if (specialCardSH(next)) {
 
-            /*************Fix double 10Bombs************/
-            if(tenBomb(next)) {
-                discardPile.dealAll(bomb);
-                setTenBomb(true);
-                setPlayer(player);
-                System.out.println(player.getName() + " Bombed DiscardPile");
-                if(!PlayerSH.playerIsDone(player))
-                {
-                setPrevCard(player.playNext(this));
-                    displayState();
-                    if(!tenBomb(prev)) {
-                        player = nextPlayer(player);
-                      } else {
-                          discardPile.dealAll(bomb);
-                          setTenBomb(true);
-                          setPlayer(player);
-                          System.out.println(player.getName() + " Bombed DiscardPile Again with a " + next +"! "
-                                + "!");
+         if(tenBomb(next)) 
+         {
+         setTenBomb(true);
+         int count = 0;
+          while(isTenBomb() && !PlayerSH.playerIsDone(player))
+            {count++;
+             setPlayer(player);
+             System.out.println(player.getName() + 
+                        " Bombed DiscardPile " + count + " times");
+             discardPile.addCard(next);
+             displayState();
+             discardPile.dealAll(bomb);
+             setPrevCard(player.playNext(this));
+             displayState();
+             
+                if(!tenBomb(prev)) {
+                    setTenBomb(false);    
+                    player = nextPlayer(player);
+                      } else 
+                         {
+                          if(!PlayerSH.playerIsDone(player)) 
+                         {
+                          continue;
+                         }  else {System.out.println(player.getName() + " Bombed DiscardPile Again with a " + next +"! "
+                                  + "\n And is Done!!");
+                          discardPile.addCard(prev);
                           displayState();
-                    }
-                } else {
-                System.out.println(player.getName() + " Bombed DiscardPile Again with a " + next +"! "
-                        + "\n And is Done!!");
-                displayState();
-                }//End if(!PlayerSH.playerIsDone(player))
-            }// End if(tenBomb(next))?
+                          discardPile.dealAll(bomb);
+                          
+                          player = nextPlayer(player);
+                          setPrevCard(player.playNext(this));
+                          displayState();
+                         }// End if(!PlayerSH.playerIsDone(player))
+                    }//End if(!tenBomb(prev))
+            }//End While
+         }// End if(tenBomb(next))?
         }//End special card next
     } //End takeTurn(PlayerSH)
         
         
-        /**Fix tenBomb code
-         * Fix lots of Red in coverage runs
+        /**Fixed tenBomb code
+         * 
          * 
          * @param player
          * @param tgtMatch
@@ -411,13 +421,15 @@ public class ShitHead {
                             
                             System.out.println("Player " + player.getName() +
                                     " plays " + next);
-                            discardPile.addCard(next);                        
+                            discardPile.addCard(next);
+                            displayState();
                             draw();
                             if(tenBomb(next))
                             {
                                 System.out.println("Player "+player.getName()+
                                         " Bombed the discardPile");
                                 discardPile.dealAll(bomb);
+                                displayState();
                                 player.playNext(this);
                             }
 
@@ -515,7 +527,6 @@ public class ShitHead {
                     setPlayer(player);
                     displayState();
                     return player;
-
                 }//End if(next != null)
                 else 
                 {
