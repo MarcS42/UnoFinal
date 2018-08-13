@@ -1,5 +1,7 @@
 package Main.uno3;
 
+import java.lang.Math.*;
+
 public class SpecialCardsSH extends Card {
     
     /**
@@ -60,6 +62,16 @@ public class SpecialCardsSH extends Card {
        return threeMirror;
    }
    
+   public static int numThreeMirrors(CardHand discardPile) {
+       int count=0;
+       for(int i = discardPile.size()-1; i > Math.max(discardPile.size()-4,0); i--) {
+           if((discardPile.getCard(i).getRankAceHi()==3) && (discardPile.getCard(i-1).getRankAceHi()==3)) {
+               count++;
+           }
+       }
+    return count;
+   }
+   
    public static boolean tenBomb(Card card) {
        tenBomb = false;
        if(card.getRankAceHi() == 10) {
@@ -106,6 +118,14 @@ public static void setTenBomb(boolean tenBomb) {
     SpecialCardsSH.tenBomb = tenBomb;
 }
 
+
+/**
+ * These special cards, declared here, are assigned values in the SH
+ * Deck Constructor. Need to do things this way
+ * in order to use boolean Contains(object)
+ * to test for threeMirrors in an AL without looking
+ * at each card in Hand using for loop.
+ */
 static Card threeC;
 static Card threeD;
 static Card threeH;

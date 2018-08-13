@@ -6,9 +6,9 @@ package Main.uno3;
 //*****Fix fourOfaKindAL and player plays > 1 card ************
 import static Main.uno3.SpecialCardsSH.*;
 //import static Main.uno3.Card.cardsPlayableRankSH;
-import static Main.uno3.Card.*;
+//import static Main.uno3.Card.*;
 import static Main.uno3.CardHand.*;
-import Main.uno3.PlayerSH.*;
+//import Main.uno3.PlayerSH.*;
 
 import java.util.ArrayList;
 
@@ -202,14 +202,14 @@ public class ShitHead {
      * @return
      */
     public void draw() {
-        if (!drawPile.empty() && player.getHand().size()
+        while (!drawPile.empty() && player.getHand().size()
                 < handSize) 
         {
             Card drawCard = drawPile.popCard();
             System.out.println("\n"+player.getName() +
                     " draws: " + drawCard);
             player.getHand().addCard(drawCard);
-        } else
+        }
         
         if(drawPile.empty())
         {
@@ -226,28 +226,28 @@ public class ShitHead {
             while(!isDone()) {
     //            displayState();
                 //            waitForUser();
-                takeTurn();
+                takeTurn2();
             }
         }
 
         //**********************************************************************
-        /** ShitHead- Basic functioning of game is (see takeTurn() below). 
+        /** ShitHead- Basic functioning of game is (see takeTurn()) below. 
         * a) First Pass actions:
         *       1) optimizeRiver() Cards with Hand cards;
-        *       2) FirstPlayer playFirstCard() !Special, draw new card;
+        *       2) FirstPlayer playFirstCard()'s !Special, draw new card;
         *       3) Advance nextPlayer(Player);
         *       4) displayState().
         * b) Start with previous card == discardPile.last;
-        * -) try to match it with what you have; 
-        *   b1) if previous is -- or --, exit standard 
-        *   play waterfall to handle these cards where 
+        * c) try to match it with what you have; 
+        *   c1) if previous is 3Mirror, exit standard 
+        *   play waterfall to handle this card where 
         *   multiple cards played in sequence changes regular 
         *   waterfall;
-        * -) Eventually, if no Match, drawForMatch == next card;
-        * -) Next card played becomes previous card to following
+        * d) Eventually, if no Match, pickup discardPile;
+        * e) Next card played becomes previous card to following
         *   player.
-         * 
-         */
+        * 
+        */
     public void takeTurn() {
 
         /**
@@ -367,7 +367,153 @@ public class ShitHead {
          }// End if(tenBomb(next))?
         }//End special card next
     } //End takeTurn(PlayerSH)
-        
+ 
+    public void takeTurn2() {
+
+        /**
+         * Start firstPass
+         * 
+         */
+        if(isFirstPass()) {
+            optimizeRiver();
+            pickFirstPlayer();
+            playFirstCard2();
+            player = nextPlayer(player);
+            setFirstPass(false);
+            displayState();
+        }
+
+        /**
+         * Problem is if players last hole card is tenBomb.
+         * Discard Pile.size()= 0, yet game is still trying to
+         * get tenBomb player to playNext()     
+         */
+        if(!PlayerSH.playerIsDone(player)) {
+            System.out.println("Player into TakeTurn() = " 
+                    + player.getName());
+        } else {
+            player = nextPlayer(player);
+            System.out.println("Player into TakeTurn()#2 = " 
+                    + player.getName());
+            CardHand playNext = player.playNext2(this);//needed if last card tenBomb && playerDone
+            setPrevCard(playNext.last());
+            player = nextPlayer(player);
+            System.out.println("Next Player into TakeTurn()#3 = " 
+                    + player.getName());
+        }
+
+        if(!discardPile.empty()) {
+            prev = discardPile.last();
+        }else {CardHand playNext = player.playNext2(this);
+            prev = playNext.last();}
+
+        /**
+         * Start actions for previous card = Special
+         */
+        if(specialCardNt7SH(prev)) {
+
+            if (threeMirror(prev) && discardPile.size() >= 2) 
+            {
+/** one problem: 2) if serchForMatch2 returns 
+ *    null, end up trying to pop a null card from a cardhand 
+ *    that is null itself; this gives index OutOfBound error as 
+ *    popcard is trying to popcard(-1): size()-1 => 0 - 1 => popcard(-1). 
+ *     
+ *    
+ */
+                Card tgtMatch = 
+                        discardPile.getCard(discardPile.size()-1-numThreeMirrors(discardPile)-1);
+                threeMirrorPlay(player, tgtMatch);
+                
+                if(!isDone()) {
+                player=nextPlayer(player);
+                System.out.println("Player out 3Mirror " + player.getName() +
+                        " is next player: ");
+                }
+            }
+
+        }//End actions for previous card = Special
+
+        CardHand cardsToPlay = player.play2(this, prev);
+        Card next;
+        if(cardsToPlay != null) {
+        next = cardsToPlay.last();
+        } else 
+        {next = null;
+            }
+        if(next==(null) && !isDone()) {
+            System.out.println(player.getName() + " picked up DiscardPile.");
+            
+            player = nextPlayer(player);
+            System.out.println(player.getName() + " is CurrentPlayer");
+            
+            CardHand playNext = player.playNext2(this);
+            next = playNext.last();
+            displayState();
+            
+            while(tenBomb(next) && !PlayerSH.playerIsDone(player)) {
+                discardPile.dealAll(bomb);
+                playNext = player.playNext2(this);
+                next = playNext.last();
+                displayState();
+                }
+            
+            player = nextPlayer(player);
+        }else 
+            if(!tenBomb(next))
+            {
+                discardPile.addCards(cardsToPlay);
+                System.out.println(player.getName()+ " plays " + cardsToPlay.size() +
+                     " x " +  next + " card(s).");
+                System.out.println("");
+                setTenBomb(false);
+                displayState();
+                player = nextPlayer(player);
+            }
+
+        /**
+         * Actions needed when NEXT card is special card
+         */
+        if (specialCardSH(next)) {
+
+         if(tenBomb(next)) 
+         {
+         setTenBomb(true);
+         int count = cardsToPlay.size();
+          while(isTenBomb() && !PlayerSH.playerIsDone(player))
+            {setPlayer(player);
+             System.out.println(player.getName() + 
+                        " Bombed DiscardPile " + count + " times");
+             discardPile.addCards(cardsToPlay);
+             displayState();
+             discardPile.dealAll(bomb);
+             CardHand playNext = player.playNext2(this);
+             setPrevCard(playNext.last());
+             displayState();
+             
+                if(!tenBomb(prev)) {
+                    setTenBomb(false);    
+                    player = nextPlayer(player);
+                      } else 
+                         {
+                         if(!PlayerSH.playerIsDone(player)) 
+                         {
+                          continue;
+                         }  else {System.out.println(player.getName() + " Bombed DiscardPile Again with a " + next +"! "
+                                  + "\n And is Done!!");
+                          discardPile.addCards(cardsToPlay);
+                          displayState();
+                          discardPile.dealAll(bomb);
+                          
+                          player = nextPlayer(player);
+                          setPrevCard(player.playNext(this));
+                          displayState();
+                         }// End if(!PlayerSH.playerIsDone(player))
+                    }//End if(!tenBomb(prev))
+            }//End While
+         }// End if(tenBomb(next))?
+        }//End special card next
+    } //End takeTurn2(PlayerSH)
         
         /**Fixed tenBomb code
          * 
@@ -386,13 +532,20 @@ public class ShitHead {
 
                     while(threeMsMatchChK) 
                     {
-                        Card next = player.searchForMatch(tgtMatch);
+                        CardHand cardsToPlay = player.searchForMatch2(tgtMatch);
+                        Card next;
+                        int numCardsPlayed;
+                        if(cardsToPlay != null) {
+                        next = cardsToPlay.last();
+                        numCardsPlayed = cardsToPlay.size();
+                        } else next = null;
 
                         if((next !=null) && threeMirror(next)) 
                         {
+                            numCardsPlayed= cardsToPlay.size();
                             System.out.println("Player " + player.getName() +
-                                    " plays another Lp1 " + next);
-                            discardPile.addCard(next);
+                                    " plays from Lp1 "+ numCardsPlayed+ " x " + next+ " cards(s).");
+                            discardPile.addCards(cardsToPlay);
                             draw();
                             threeMsMatchChK=true;
                             
@@ -411,26 +564,29 @@ public class ShitHead {
                             System.out.println(player.getName() + " picked up DiscardPile.");
                             player = nextPlayer(player);
                             System.out.println(player.getName() + " is CurrentPlayer");
-                            next = player.playNext(this);
+                            cardsToPlay = player.playNext2(this);
+                            next = cardsToPlay.last();
 
                             setPrevCard(next);
                             setPlayer(player);
                             displayState();
                             return player;   
                         }else {//!3mirror and !null
-                            
+                            numCardsPlayed= cardsToPlay.size();
                             System.out.println("Player " + player.getName() +
-                                    " plays " + next);
-                            discardPile.addCard(next);
+                                    " plays " + numCardsPlayed + " x " 
+                                    + next + " card(s)");
+                            discardPile.addCards(cardsToPlay);
                             displayState();
                             draw();
-                            if(tenBomb(next))
+                            if(tenBomb(next) && !PlayerSH.playerIsDone(player))
                             {
-                                System.out.println("Player "+player.getName()+
+                                System.out.println("Player "+ player.getName()+
                                         " Bombed the discardPile");
                                 discardPile.dealAll(bomb);
                                 displayState();
-                                player.playNext(this);
+                                cardsToPlay = player.playNext2(this);
+                                next = cardsToPlay.last();
                             }
 
                             setPrevCard(next);
@@ -446,13 +602,16 @@ public class ShitHead {
              /*****Looking for threeMirrors in River cards****/
                 while(threeMsMatchChK) 
                 {
-                    Card next = player.searchForMatch(tgtMatch);
+                    CardHand cardsToPlay = player.searchForMatch2(tgtMatch);
+                    Card next = cardsToPlay.last();
+                    int numCardsPlayed = cardsToPlay.size();
 
-                    if((next !=null) && threeMirror(next)) 
+                    if((next != null) && threeMirror(next)) 
                     {
                         System.out.println("Player " + player.getName() +
-                                " plays another RLp2 " + next);
-                        discardPile.addCard(next);
+                                " plays from RLp2 " + numCardsPlayed + 
+                                " x " + next + " card(s).");
+                        discardPile.addCards(cardsToPlay);
                         draw();
                         threeMsMatchChK=true;
                         
@@ -471,7 +630,8 @@ public class ShitHead {
                         System.out.println(player.getName() + " picked up DiscardPile.");
                         player = nextPlayer(player);
                         System.out.println(player.getName() + " is CurrentPlayer");
-                        next = player.playNext(this);
+                        cardsToPlay = player.playNext2(this);
+                        next = cardsToPlay.last();
 
                         setPrevCard(next);
                         setPlayer(player);
@@ -482,14 +642,18 @@ public class ShitHead {
                     if(cardsPlayableRankSH(tgtMatch, next))
                     {                             
                         System.out.println("Player " + player.getName() +
-                                " plays " + next);
-                        discardPile.addCard(next);
-                        if(tenBomb(next))
+                                " plays "+ numCardsPlayed +" x "+ 
+                                next + " card(s)");
+                        discardPile.addCards(cardsToPlay);
+                        
+                        if(tenBomb(next) && !PlayerSH.playerIsDone(player))
                         {
-                            System.out.println("Player "+player.getName()+
+                            System.out.println("Player "+ player.getName()+
                                     " Bombed the discardPile");
                             discardPile.dealAll(bomb);
-                            player.playNext(this);
+                            displayState();
+                            cardsToPlay = player.playNext2(this);
+                            next = cardsToPlay.last();
                         }
 
                         setPrevCard(discardPile.last());
@@ -500,26 +664,31 @@ public class ShitHead {
                 }// End for loop 2
             }// End if(!player.River.empty)
 
-            /****** Playing Hole cards *******/
+            /****** Playing Hole cards in ThreeMirror *******/
             if(player.getHand().empty() && player.getRiver().empty())
             {
-                Card next = player.pickRandomHoleCard(tgtMatch);
+                CardHand cardToPlay = player.pickRandomHoleCard2(tgtMatch);
+                Card next = cardToPlay.last();
 
                 if(next != null)
                 {                             
                     System.out.println("Player " + player.getName() +
-                            " plays " + next);
+                            " plays Hole card (fm 3Mirror) " + next);
                     discardPile.addCard(next);
+                    
                     if(tenBomb(next))
                     {
                         System.out.println("Player "+player.getName()+
-                                " Bombed the discardPile");
+                                " Bombed the discardPile from the Hole");
                         discardPile.dealAll(bomb);
                         if(!PlayerSH.playerIsDone(player)) {
-                            player.playNext(this);
-                        }else {player = nextPlayer(player);
+                           CardHand cardsToPlay = player.playNext2(this);
+                            next = cardsToPlay.last();
+                        }else 
+                         {player = nextPlayer(player);
                         System.out.println(player.getName() + " is CurrentPlayer");
-                        player.playNext(this);
+                        CardHand cardsToPlay = player.playNext2(this);
+                        next = cardsToPlay.last();
                         }
                     }
 
@@ -534,7 +703,8 @@ public class ShitHead {
                     System.out.println(player.getName() + " picked up DiscardPile.");
                     player = nextPlayer(player);
                     System.out.println(player.getName() + " is CurrentPlayer");
-                    next = player.playNext(this); 
+                    CardHand cardsToPlay = player.playNext2(this);
+                    next = cardsToPlay.last();
 
 
                     setPrevCard(next);
@@ -543,68 +713,68 @@ public class ShitHead {
                     return player;   
                 }//End if(next==null)
             }//End Hand.empty() && River.empty()
-            return player;  
+           return player;  
         }//End method threeMirrorPlay(PlayerSH player, Card tgtMatch)
         
     /**OptimizeRiver()
-         * For each Player:
-         * Looks at river Cards:
-         *  1) If card is 2, 3, or 10, or Q, K, Ace, do nothing; 
-         *  2) otherwise searches Player Hand cards for 2, 3, or 10, 
-         *      or Q, K, Ace;
-         *  3) if found, swaps Hand card for River card.
-         *  3.1) Insertion Sort Player Hand cards
-         *  3.2) Insertion Sort Player River cards
-         *  4) Not found, do nothing/keep looking.
-         *  5) Rerun again to pickup riverCards that changed 
-         *     position when Hand previously swapped for River
-         *  6) Next Player.
-         */
-            public void optimizeRiver() {
-                //   Fixed riverCards sometimes not being replaced with better handCards by running twice.
-                //   Problem is that when removeAll and addAll is done on riverCards, card order
-                //     changes such that low river card can be skipped. 
-                
-                for(int j = 0; j < 2; j++) {//Run optimize twice to overcome addAll/removAll discussed above
-                    for(PlayerSH p:players) {
+     * For each Player:
+     * Looks at river Cards:
+     *  1) If card is 2, 3, or 10, or Q, K, Ace, do nothing; 
+     *  2) otherwise searches Player Hand cards for 2, 3, or 10, 
+     *      or Q, K, Ace;
+     *  3) if found, swaps Hand card for River card.
+     *  3.1) Insertion Sort Player Hand cards
+     *  3.2) Insertion Sort Player River cards
+     *  4) Not found, do nothing/keep looking.
+     *  5) Rerun again to pickup riverCards that changed 
+     *     position when Hand previously swapped for River
+     *  6) Next Player.
+     */
+    public void optimizeRiver() {
+        //   Fixed riverCards sometimes not being replaced with better handCards by running twice.
+        //   Problem is that when removeAll and addAll is done on riverCards, card order
+        //     changes such that low river card can be skipped. 
         
-                        int rCardsOptimized = 0;/*Counts number of R 
-                                     cards actually optimized*/
-                        int Hc;
-                        int optPasses = 0; //count the number of optim. attempts to avoid 
-        //                     perpetual loop if Hand cards not better than River cards
-                        while((rCardsOptimized < riverSize) && (optPasses < riverSize)) {
-                            optPasses++;
-                            Card riverCard = p.getRiver().getCard(rCardsOptimized);
-                            if(specialCardNt7SH(riverCard) || 
-                                    riverCard.getRankAceHi() > 11) {
+        for(int j = 0; j < 2; j++) {//Run optimize twice to overcome addAll/removAll discussed above
+            for(PlayerSH p:players) {
+
+                int rCardsOptimized = 0;/*Counts number of R 
+                             cards actually optimized*/
+                int Hc;
+                int optPasses = 0; //count the number of optim. attempts to avoid 
+//                     perpetual loop if Hand cards not better than River cards
+                while((rCardsOptimized < riverSize) && (optPasses < riverSize)) {
+                    optPasses++;
+                    Card riverCard = p.getRiver().getCard(rCardsOptimized);
+                    if(specialCardNt7SH(riverCard) || 
+                            riverCard.getRankAceHi() > 11) {
+                        rCardsOptimized++;
+                        continue;
+                    } else {// Starts at end w/sorted ascending(..??..)
+                        for(Hc=handSize-1; Hc >= 0; Hc--) {
+                            ArrayList<Card> tempR = new ArrayList<>(), 
+                                    tempH= new ArrayList<>();
+                            Card handCard = p.getHand().getCard(Hc);
+                            if(specialCardNt7SH(handCard) || 
+                                    handCard.getRankAceHi() > 11) {
+                                tempR.add(riverCard);
+                                tempH.add(handCard);
+                                p.getHand().getCards().removeAll(tempH);
+                                p.getHand().getCards().addAll(tempR);
+                                p.getRiver().getCards().removeAll(tempR);
+                                p.getRiver().getCards().addAll(tempH);
                                 rCardsOptimized++;
-                                continue;
-                            } else {// Starts at end w/sorted ascending(..??..)
-                                for(Hc=handSize-1; Hc >= 0; Hc--) {
-                                    ArrayList<Card> tempR = new ArrayList<>(), 
-                                            tempH= new ArrayList<>();
-                                    Card handCard = p.getHand().getCard(Hc);
-                                    if(specialCardNt7SH(handCard) || 
-                                            handCard.getRankAceHi() > 11) {
-                                        tempR.add(riverCard);
-                                        tempH.add(handCard);
-                                        p.getHand().getCards().removeAll(tempH);
-                                        p.getHand().getCards().addAll(tempR);
-                                        p.getRiver().getCards().removeAll(tempR);
-                                        p.getRiver().getCards().addAll(tempH);
-                                        rCardsOptimized++;
-                                        Hc=-1;//Once R card optimized with swap 
-                                            //from H card, stop looking at H cards
-                                        insertionSortCardHand(p.getHand());
-                                        insertionSortCardHand(p.getRiver());
-                                    }//* End if (handCard Special || > 11) 
-                                }// End for(c=handSize-1;c >=0 ;c--)
-                            }//*End if (riverCard Special || > 11) 
-                        }// End while(rCardOptimized < riverSize)
-                    }// End p:players
-                }// End rerun via for(j=0;j<2;j++)
-            }// End optimize riverCards()
+                                Hc=-1;//Once R card optimized with swap 
+                                    //from H card, stop looking at H cards
+                                insertionSortCardHand(p.getHand());
+                                insertionSortCardHand(p.getRiver());
+                            }//* End if (handCard Special || > 11) 
+                        }// End for(c=handSize-1;c >=0 ;c--)
+                    }//*End if (riverCard Special || > 11) 
+                }// End while(rCardOptimized < riverSize)
+            }// End p:players
+        }// End rerun via for(j=0;j<2;j++)
+    }// End optimize riverCards()
 
     /**
          * 1) Set Rank to look for, starting at 3; 
@@ -660,28 +830,38 @@ public class ShitHead {
         }  
     }// End playFirstCard().
 
+    public void playFirstCard2() {
+        player.playNext2(this);
+        
+//        ArrayList<Card> firstCards;
+//        for(int i = 0; i < handSize; i++) {
+//            Card f1 = player.getHand().getCards().get(i);
+//            
+//            if(!specialCardSH(f1)) {
+//             firstCards.add(player.getHand().popCard(i));
+//                System.out.println("FirstPlayer "+ player.getName()+" plays "+ firstCard);
+//                discardPile.addCard(firstCard);
+//                draw();
+//            } else {
+//                continue;
+//            }
+//        }
+//        // if firstPlayer only has special cards
+//        if(firstCard == null) {
+//            firstCard = player.getHand().popCard(0);
+//            discardPile.addCard(firstCard);
+//            System.out.println("FirstPlayer only has special HCards " +
+//            player.getName()+" plays "+ firstCard);
+//        }  
+    }// End playFirstCard2().
+    
     public PlayerSH nextPlayer(PlayerSH currentPlayer) {
         int indexNextPlayer;
         indexNextPlayer = (players.indexOf(currentPlayer)+1) % players.size();
         return players.get(indexNextPlayer);
     }
-    
-    public boolean cardCountMoreThan52() {
-        int playerSum, playersSum=0, ShSum;
-        for(PlayerSH p:players) {
-            playerSum=p.getHand().size()+
-                    p.getRiver().size()+p.getHole().size();
-            playersSum=+playerSum;
-        }
-        ShSum = bomb.size()+discardPile.size()+
-                drawPile.size();
-        if(playersSum+ShSum > 52) {
-           return true; 
-        }
-        return false;
-    }
-  //***************************************************
-    
+ 
+//*****************************************************    
     public PlayerSH getPlayer() {
         return this.player;
     }
@@ -737,6 +917,21 @@ public class ShitHead {
 
     public static boolean isFourOfaKind() {
         return fourOfaKind;
+    }
+
+    public boolean cardCountMoreThan52() {
+        int playerSum, playersSum=0, ShSum;
+        for(PlayerSH p:players) {
+            playerSum=p.getHand().size()+
+                    p.getRiver().size()+p.getHole().size();
+            playersSum=+playerSum;
+        }
+        ShSum = bomb.size()+discardPile.size()+
+                drawPile.size();
+        if(playersSum+ShSum > 52) {
+           return true; 
+        }
+        return false;
     }
     
 
