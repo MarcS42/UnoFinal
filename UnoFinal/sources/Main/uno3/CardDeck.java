@@ -220,6 +220,14 @@ public static CardDeck deserializeCardDeck() {
     public void addCard(Card card) {
            cards.add(card);
        }
+    
+    /**Helper/Utility method.
+     * Used in many methods
+  * @param Cardhand cardsToPlay to be added to end of discardPile AL
+  */
+ public void addCards(CardHand cardsToPlay) {
+        cards.addAll(cardsToPlay.getCards());
+    }
 
     /**Utility used wherever you need For control loop
      * @return
