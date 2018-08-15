@@ -293,7 +293,8 @@ public class ShitHead {
             if (threeMirror(prev) && discardPile.size() >= 2) 
             {
 
-                Card tgtMatch = discardPile.getCard(discardPile.size()-2);
+                Card tgtMatch = 
+                        discardPile.getCard(Math.max((discardPile.size()-numThreeMirrors(discardPile)-1),0));
                 threeMirrorPlay(player, tgtMatch);
                 
                 if(!isDone()) {
@@ -422,7 +423,7 @@ public class ShitHead {
  *    
  */
                 Card tgtMatch = 
-                        discardPile.getCard(discardPile.size()-1-numThreeMirrors(discardPile)-1);
+                      discardPile.getCard(Math.max((discardPile.size()-numThreeMirrors(discardPile)-1),0));
                 threeMirrorPlay(player, tgtMatch);
                 
                 if(!isDone()) {
@@ -439,8 +440,8 @@ public class ShitHead {
         if(cardsToPlay != null) {
         next = cardsToPlay.last();
         } else 
-        {next = null;
-            }
+        {next = null;}
+            
         if(next==(null) && !isDone()) {
             System.out.println(player.getName() + " picked up DiscardPile.");
             
@@ -535,6 +536,7 @@ public class ShitHead {
                         CardHand cardsToPlay = player.searchForMatch2(tgtMatch);
                         Card next;
                         int numCardsPlayed;
+                        
                         if(cardsToPlay != null) {
                         next = cardsToPlay.last();
                         numCardsPlayed = cardsToPlay.size();
@@ -603,8 +605,13 @@ public class ShitHead {
                 while(threeMsMatchChK) 
                 {
                     CardHand cardsToPlay = player.searchForMatch2(tgtMatch);
-                    Card next = cardsToPlay.last();
-                    int numCardsPlayed = cardsToPlay.size();
+                    Card next;
+                    int numCardsPlayed;
+                    if(cardsToPlay != null) {
+                    next = cardsToPlay.last();
+                    numCardsPlayed = cardsToPlay.size();
+                    } else {next = null;
+                    numCardsPlayed = 0;}
 
                     if((next != null) && threeMirror(next)) 
                     {
@@ -668,7 +675,10 @@ public class ShitHead {
             if(player.getHand().empty() && player.getRiver().empty())
             {
                 CardHand cardToPlay = player.pickRandomHoleCard2(tgtMatch);
-                Card next = cardToPlay.last();
+                Card next;
+                if(cardToPlay != null) {
+                next = cardToPlay.last();
+                } else {next = null;}
 
                 if(next != null)
                 {                             

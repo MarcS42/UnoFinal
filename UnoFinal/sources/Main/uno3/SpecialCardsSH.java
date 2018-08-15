@@ -63,7 +63,7 @@ public class SpecialCardsSH extends Card {
    }
    
    public static int numThreeMirrors(CardHand discardPile) {
-       int count=0;
+       int count=1;
        for(int i = discardPile.size()-1; i > Math.max(discardPile.size()-4,0); i--) {
            if((discardPile.getCard(i).getRankAceHi()==3) && (discardPile.getCard(i-1).getRankAceHi()==3)) {
                count++;

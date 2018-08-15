@@ -1,56 +1,6 @@
-Syntax error on token "import", assert expectedimport java.util.ArrayList;
+Syntax error on token "import", assert expectedSyntax error on token "import", assert expectedimport java.util.ArrayList;
 import static Main.uno3.SpecialCardsSH.*;
 import static Main.uno3.Card.*;
 import static Main.uno3.CardHand.*;
-
-ArrayList<Card> cardsPlayable = new ArrayList<>();
-ArrayList<Integer> workingSet = new ArrayList<>();
-
-Card 4c = new Card(4,0);
-Card 5d = new Card(5,1);
-Card 6d = new Card(6,1);
-Card 6s = new Card(6,3);
-Card 7c = new Card(7,0);
-Card 8d = new Card(8,1);
-Card 8s = new Card(8,3);
-Card 10d = new Card(10,1);
-Card 10h = new Card(10,2);
-Card 10s = new Card(10,3);
-Card 10c = new Card(10,0);
-Card jc = new Card(11,0);
-Card jd = new Card(11,1);
-Card jh = new Card(11,2);
-
-cardsplayble.add(4c);
-cardsplayble.add(5d);
-cardsplayble.add(6d);
-cardsplayble.add(6s);
-cardsplayble.add(7c);
-cardsplayble.add(8d);
-cardsplayble.add(8s);
-cardsplayble.add(10h);
-cardsplayble.add(10s);
-cardsplayble.add(10d);
-cardsplayble.add(10c);
-cardsplayble.add(jc);
-cardsplayble.add(jd);
-cardsplayble.add(jh);
-
-if(cardsPlayable.size() > 1) {
-    int p = cardsPlayable.size()-1;
-    Integer count = 1;
-    while (p >= 1) { 
-        if(cardsPlayable.get(p).getRankAceHi() == 
-                cardsPlayable.get(p-1).getRankAceHi()) {
-            count++;
-            p--;
-            continue;
-        } else {
-            workingSet.add(count);
-            count = 1;
-            p--;
-        }
-    }//End while(p)   
-    workingSet.add(count);
-}
-System.out.println((workingSet));
+Syntax error on token "(", ; expectedCannot use this in a static contextCard kingC = new Card(13,0,true);Card aceS = new Card(14,3,true);Card threeC = new Card(3,0,true);Card threeD = new Card(3,1,true);Card threeH = new Card(3,2,true);Card threeS = new Card(3,3,true);ArrayList<Card> discardPileAL = new ArrayList<>();CardHand discardPile = new CardHand("disPile", discardPileAL);discardPile.addCard(threeC);discardPile.addCard(threeS);Card tgtMatch = discardPile.getCard(discardPile.size()-1-numThreeMirrors(discardPile)-1);
+public static int numThreeMirrors(CardHand discardPile) {    int count=0;    for(int i = discardPile.size()-1; i > Math.max(discardPile.size()-4,0); i--) {        if((discardPile.getCard(i).getRankAceHi()==3) && (discardPile.getCard(i-1).getRankAceHi()==3)) {            count++;        }    } return count;}

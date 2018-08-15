@@ -163,6 +163,7 @@ public class PlayerSH {
     }//End pickRandomHoleCard2
 
     /**Plays next card when discardPile.empty()
+     * Adds card(s) to discardPile.
      * Added handler for playNext call when player isDone
      * 
      * @param shitHead TODO
@@ -272,6 +273,7 @@ public class PlayerSH {
      * @param hand
      * @param prev
      * @return AL CardsToPlay to searchForMatch2().
+     * 
      * Calls cardsPlayableAnalyzer() which pops cards from hand, 
      * but does NOT add them to discardPile or do any System print out.
      */
@@ -330,6 +332,14 @@ public class PlayerSH {
      return playableHNS;
     }//End ArrayList<Card> highNtSpecial2(CardHand hand, Card prev)
 
+    /**
+     * @param hand
+     * @param prev
+     * @return AL of cards to play that are cardsToPlaySpc.
+     * 
+     * Calls cardsPlayableAnalyzer() which pops cards from hand, 
+     * but does NOT add them to discardPile or do any System print out.
+     */
     public ArrayList<Card> playSpecialCards2(CardHand hand, Card prev) {
         ArrayList<Card> playableSpc = new ArrayList<>();
         ArrayList<ArrayList<Card>> cardsToBePlayed;
@@ -356,7 +366,7 @@ public class PlayerSH {
 
     /**Pops Cards from hand that is parameter.
      * @param hand
-     * @param cardsToBePlayed
+     * @param cardsToBePlayed = AL sdtq of AL's of cards singles,doubles,triples,etc 
      * @param cardsToPlay
      * @return AL of cardsToPlay using logic of playing FoaK,
      * then triples, doubles, and lastly singles.
@@ -377,6 +387,7 @@ public class PlayerSH {
               {
               cardsToPlay.add(cardsToBePlayed.get(3).get(i2));
               }
+         //****************Remove cardsToPlay from hand********************/
               for(Card c:cardsToPlay) {
                   hand.popCard(c); //Remove cardsToPlay from hand
               }
@@ -388,6 +399,7 @@ public class PlayerSH {
               {
               cardsToPlay.add(cardsToBePlayed.get(2).get(i2));
               }
+         //****************Remove cardsToPlay from hand********************/       
               for(Card c:cardsToPlay) {
                   hand.popCard(c); //Remove cardsToPlay from hand
               }
@@ -399,6 +411,7 @@ public class PlayerSH {
               {
               cardsToPlay.add(cardsToBePlayed.get(1).get(i2));
               }
+         //****************Remove cardsToPlay from hand********************/     
               for(Card c:cardsToPlay) {
                   hand.popCard(c); //Remove cardsToPlay from hand
               }
@@ -410,18 +423,22 @@ public class PlayerSH {
               {
               cardsToPlay.add(cardsToBePlayed.get(0).get(i2));
               }
-          }
+        //****************Remove cardsToPlay from hand********************/    
              for(Card c:cardsToPlay) {
                  hand.popCard(c); //Remove cardsToPlay from hand
              }
              return cardsToPlay;
+          }
+        //*****if sdtq is empty returns empty cardsToPlay*****/
+        return cardsToPlay;
     }//End ArrayList<Card> cardsToPlay(CardHand hand, ArrayList<ArrayList<Card>> cardsToBePlayed,
 
     /**Pops cards from hand parameter input.
      * @param hand
      * @param cardsToBePlayed
      * @param cardsToPlaySpc
-     * @return Al cardsToPlaySpc using reverse logic by playing
+     * 
+     * @return Al cardsToPlaySpc using REVERSE LOGIC by playing
      *     single specialCards before playing doubles, triples, etc.
      */
     public ArrayList<Card> cardsToPlaySpc(CardHand hand, ArrayList<ArrayList<Card>> cardsToBePlayed,
@@ -443,7 +460,6 @@ public class PlayerSH {
             for(Card c:cardsToPlaySpc) {
                 hand.popCard(c); //Remove cardsToPlay from hand
             }
-            
            return cardsToPlaySpc;
         }else
         if(!cardsToBePlayed.get(1).isEmpty()) {
@@ -455,7 +471,6 @@ public class PlayerSH {
             for(Card c:cardsToPlaySpc) {
                 hand.popCard(c); //Remove cardsToPlay from hand
             }
-            
            return cardsToPlaySpc;
         } else
         if(!cardsToBePlayed.get(2).isEmpty()) {
@@ -467,7 +482,6 @@ public class PlayerSH {
             for(Card c:cardsToPlaySpc) {
                 hand.popCard(c); //Remove cardsToPlay from hand
             }
-            
            return cardsToPlaySpc;
         } else
         if(!cardsToBePlayed.get(3).isEmpty()) {
@@ -480,66 +494,66 @@ public class PlayerSH {
         for(Card c:cardsToPlaySpc) {
             hand.popCard(c); //Remove cardsToPlay from hand
         }
-       return cardsToPlaySpc;
-    }
+      return cardsToPlaySpc;
+    }// End cardsToPlaySpc(CardHand hand, ArrayList<ArrayList<Card>> cardsToBePlayed, ArrayList<Card> cardsToPlaySpc).
+    
 
     /**workingSet-to-cardsPlayable index position 
-         * converter.
-         * @param cardsPlayable AL of playable cards
-         * @param workingSet Integer AL of quads,triple,doubles, 
-         * and single playable cards.
-         * @return Returns an AL(sdtq) of ArrayLists of cards
-         * single, double, triple, quads
-         */
-        public ArrayList<ArrayList<Card>> workingSetCdsPlayableIndexConverter(ArrayList<Card> cardsPlayable, ArrayList<Integer> workingSet ) {
-            ArrayList<Card> singles0 = new ArrayList<>();
-            ArrayList<Card> doubles0 = new ArrayList<>();
-            ArrayList<Card> triples0 = new ArrayList<>();
-            ArrayList<Card> quads0 = new ArrayList<>();
-            ArrayList<ArrayList<Card>> sdtq0 = new ArrayList<>();
-            
-        int cPSize = cardsPlayable.size(), wSVal, j, cPIndex;
-        for(int wSPosit=0; wSPosit < workingSet.size(); wSPosit++){
-            if(wSPosit != 0) {
-            cPSize -= workingSet.get(wSPosit-1);
-            }
-            wSVal = workingSet.get(wSPosit);
-            for(j=0; j<wSVal; j++){
-                cPIndex=cPSize-1-j;
+     * converter.
+     * @param cardsPlayable AL of playable cards
+     * @param workingSet Integer AL of quads,triple,doubles, 
+     * and single playable cards.
+     * @return Returns an AL(sdtq) of ArrayLists of cards
+     * single, double, triple, quads
+     */
+    public ArrayList<ArrayList<Card>> workingSetCdsPlayableIndexConverter(ArrayList<Card> cardsPlayable, ArrayList<Integer> workingSet ) {
+        ArrayList<Card> singles0 = new ArrayList<>();
+        ArrayList<Card> doubles0 = new ArrayList<>();
+        ArrayList<Card> triples0 = new ArrayList<>();
+        ArrayList<Card> quads0 = new ArrayList<>();
+        ArrayList<ArrayList<Card>> sdtq0 = new ArrayList<>();
+        
+    int cPSize = cardsPlayable.size(), wSVal, j, cPIndex;
+    for(int wSPosit=0; wSPosit < workingSet.size(); wSPosit++){
+        if(wSPosit != 0) {
+        cPSize -= workingSet.get(wSPosit-1);
+        }
+        wSVal = workingSet.get(wSPosit);
+        for(j=0; j<wSVal; j++){
+            cPIndex=cPSize-1-j;
+
+            switch(wSVal) {
+              case 1: singles0.add(cardsPlayable.get(cPIndex));
+                  break;
+              case 2: doubles0.add(cardsPlayable.get(cPIndex));
+                  break;
+              case 3: triples0.add(cardsPlayable.get(cPIndex));
+                  break;
+              case 4: quads0.add(cardsPlayable.get(cPIndex));
+                  break;
+              default :
+                  System.out.println("There is a problem in the Switch code block");
+            }// End Switch block
+        }//End for(j=0; j<wSVal; j++)
+    }//End for(int wSPosit=0; wSPosit < workingSet.size(); wSPosit++)
     
-                switch(wSVal) {
-                  case 1: singles0.add(cardsPlayable.get(cPIndex));
-                      break;
-                  case 2: doubles0.add(cardsPlayable.get(cPIndex));
-                      break;
-                  case 3: triples0.add(cardsPlayable.get(cPIndex));
-                      break;
-                  case 4: quads0.add(cardsPlayable.get(cPIndex));
-                      break;
-                  default :
-                      System.out.println("There is a problem in the Switch code block");
-                }// End Switch block
-            }//End for(j=0; j<wSVal; j++)
-        }//End for(int wSPosit=0; wSPosit < workingSet.size(); wSPosit++)
-        
-        System.out.println("Four-of-A-Kind: \n" + quads0 + "\nTriples: \n" + triples0 +
-                "\nDoubles: \n" + doubles0 + "\nSingles: \n" + singles0);
-        
-        sdtq0.add(singles0);
-        sdtq0.add(doubles0);
-        sdtq0.add(triples0);
-        sdtq0.add(quads0);
-        
-        return sdtq0;
+    System.out.println("Four-of-A-Kind: \n" + quads0 + "\nTriples: \n" + triples0 +
+            "\nDoubles: \n" + doubles0 + "\nSingles: \n" + singles0);
     
-      }
+    sdtq0.add(singles0);
+    sdtq0.add(doubles0);
+    sdtq0.add(triples0);
+    sdtq0.add(quads0);
+    
+    return sdtq0;
+  }
 
     /**Takes a cardsPlayable AL and analyzes it for
      * four-of-a-kind, triples, doubles, and singles
      * 
      * @param cardsPlayable
      * 
-     * @return integer AL 'workingSet' with numbers from 4 to 1
+     * @return integer AL 'workingSet' with numbers from 4 to 1.
      * The position of the integers in the array is
      * linked to their original position in cardsPlayable.
      */
@@ -567,26 +581,27 @@ public class PlayerSH {
     }
 
     /**For games where multiple playable cards are possible
-         * @param cardsPlayable AL of playable Cards that may come from
-         *  any Hand CardHand via Search for Match
-         * @return AL of cardsToBePlayed as determined by analysis of cardsPlayable.
-         * Actual logic is left to game-specific 'searchMatch2()' method
-         */
-        public ArrayList<ArrayList<Card>> cardsPlayableAnalyzer(ArrayList<Card> cardsPlayable){
-            ArrayList<ArrayList<Card>> sdtq = new ArrayList<>();
-          
-          ArrayList<ArrayList<Card>> cardsToBePlayed = new ArrayList<>();
-          
-          ArrayList<Integer> workingSet = cardsPlayableXRay(cardsPlayable);
-            
-         /********workingSet-to-cardsPlayable index position converter***/
-          sdtq = workingSetCdsPlayableIndexConverter(cardsPlayable,workingSet);
-          
-          cardsToBePlayed = sdtq;  
-            
-          
-          return cardsToBePlayed;
-        }// End cardsPlayableAnalyzer
+     * 
+     * @param cardsPlayable AL of playable Cards that may come from
+     *  any Hand CardHand via Search for Match
+     * @return AL of cardsToBePlayed as determined by analysis of cardsPlayable.
+     * Actual logic is left to game-specific methods in 'searchMatch2()'.
+     */
+    public ArrayList<ArrayList<Card>> cardsPlayableAnalyzer(ArrayList<Card> cardsPlayable){
+        ArrayList<ArrayList<Card>> sdtq = new ArrayList<>();
+      
+      ArrayList<ArrayList<Card>> cardsToBePlayed = new ArrayList<>();
+      
+      ArrayList<Integer> workingSet = cardsPlayableXRay(cardsPlayable);
+        
+     /********workingSet-to-cardsPlayable index position converter***/
+      sdtq = workingSetCdsPlayableIndexConverter(cardsPlayable,workingSet);
+      
+      cardsToBePlayed = sdtq;  
+        
+      
+      return cardsToBePlayed;
+    }// End cardsPlayableAnalyzer
 
     /**Searches current Player's hand(s) for match to
      * Card prev card. ******Pops matching card****
