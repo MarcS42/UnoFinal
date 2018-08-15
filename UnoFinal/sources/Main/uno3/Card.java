@@ -70,7 +70,7 @@ public class Card implements Serializable {
         return false;
     }
 
-    /**Determines if card2 playable after card1 independent of
+    /**Determines if card2 playable after card1, independent of
      *  Suits.
      *   'Playable' means "> than or = to"
      *    

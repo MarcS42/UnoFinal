@@ -415,12 +415,10 @@ public class ShitHead {
 
             if (threeMirror(prev) && discardPile.size() >= 2) 
             {
-/** one problem: 2) if serchForMatch2 returns 
+/** Fixed problem: 2) if serchForMatch2 returns 
  *    null, end up trying to pop a null card from a cardhand 
  *    that is null itself; this gives index OutOfBound error as 
  *    popcard is trying to popcard(-1): size()-1 => 0 - 1 => popcard(-1). 
- *     
- *    
  */
                 Card tgtMatch = 
                       discardPile.getCard(Math.max((discardPile.size()-numThreeMirrors(discardPile)-1),0));
@@ -516,8 +514,8 @@ public class ShitHead {
         }//End special card next
     } //End takeTurn2(PlayerSH)
         
-        /**Fixed tenBomb code
-         * 
+        /**Fixed tenBomb code, but should refactor into a
+         *   method tenBombInThreeMirror.
          * 
          * @param player
          * @param tgtMatch
@@ -537,6 +535,8 @@ public class ShitHead {
                         Card next;
                         int numCardsPlayed;
                         
+                /**code below fixes issue of trying to popCard() 
+                 *   from CardHand that is null****/        
                         if(cardsToPlay != null) {
                         next = cardsToPlay.last();
                         numCardsPlayed = cardsToPlay.size();
@@ -607,6 +607,10 @@ public class ShitHead {
                     CardHand cardsToPlay = player.searchForMatch2(tgtMatch);
                     Card next;
                     int numCardsPlayed;
+                    
+            /**code below fixes issue of trying to popCard() 
+             *   from CardHand that is null*
+             *   ***/        
                     if(cardsToPlay != null) {
                     next = cardsToPlay.last();
                     numCardsPlayed = cardsToPlay.size();

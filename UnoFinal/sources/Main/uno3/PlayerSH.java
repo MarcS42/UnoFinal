@@ -163,10 +163,11 @@ public class PlayerSH {
     }//End pickRandomHoleCard2
 
     /**Plays next card when discardPile.empty()
+     * playNext2 never returns 'null'
      * Adds card(s) to discardPile.
      * Added handler for playNext call when player isDone
      * 
-     * @param shitHead TODO
+     * @param shitHead 
      * @return
      */
     public CardHand playNext2(ShitHead shitHead) {
