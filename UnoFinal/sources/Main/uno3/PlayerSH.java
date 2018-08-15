@@ -122,7 +122,7 @@ public class PlayerSH {
        /**       Look for and play special Rcards */            
             returnALR3 = playSpecialCards2(river, prev);
             if(!returnALR3.isEmpty())
-            return new CardHand("ALR3",returnALR2);
+            return new CardHand("ALR3",returnALR3);
              
          return null;
         }// End !river.empty()
