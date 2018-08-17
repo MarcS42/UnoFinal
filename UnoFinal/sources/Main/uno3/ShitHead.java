@@ -275,7 +275,7 @@ public class ShitHead {
             player = nextPlayer(player);
             System.out.println("Player into TakeTurn()#2 = " 
                     + player.getName());
-            player.playNext(this);//needed if last card tenBomb && playerDone
+            player.playNext2(this);//needed if last card tenBomb && playerDone
             player = nextPlayer(player);
             System.out.println("Next Player into TakeTurn()#3 = " 
                     + player.getName());
@@ -369,6 +369,9 @@ public class ShitHead {
         }//End special card next
     } //End takeTurn(PlayerSH)
  
+    /**takeTurn2 is the multiple playable cards version of ShitHead
+     * 
+     */
     public void takeTurn2() {
 
         /**
@@ -415,11 +418,6 @@ public class ShitHead {
 
             if (threeMirror(prev) && discardPile.size() >= 2) 
             {
-/** Fixed problem: 2) if serchForMatch2 returns 
- *    null, end up trying to pop a null card from a cardhand 
- *    that is null itself; this gives index OutOfBound error as 
- *    popcard is trying to popcard(-1): size()-1 => 0 - 1 => popcard(-1). 
- */
                 Card tgtMatch = 
                       discardPile.getCard(Math.max((discardPile.size()-numThreeMirrors(discardPile)-1),0));
                 threeMirrorPlay(player, tgtMatch);
@@ -490,27 +488,28 @@ public class ShitHead {
              setPrevCard(playNext.last());
              displayState();
              
-                if(!tenBomb(prev)) {
-                    setTenBomb(false);    
-                    player = nextPlayer(player);
-                      } else 
-                         {
-                         if(!PlayerSH.playerIsDone(player)) 
-                         {
-                          continue;
-                         }  else {System.out.println(player.getName() + " Bombed DiscardPile Again with a " + next +"! "
-                                  + "\n And is Done!!");
-                          discardPile.addCards(cardsToPlay);
-                          displayState();
-                          discardPile.dealAll(bomb);
-                          
-                          player = nextPlayer(player);
-                          setPrevCard(player.playNext(this));
-                          displayState();
-                         }// End if(!PlayerSH.playerIsDone(player))
-                    }//End if(!tenBomb(prev))
+            if(!tenBomb(prev)) {
+                setTenBomb(false);    
+                player = nextPlayer(player);
+                  } else 
+                     {//for when player.playNext2 leads to 2nd tenBomb
+                     if(!PlayerSH.playerIsDone(player)) 
+                     {
+                      continue;
+                     }  else {System.out.println(player.getName() + " Bombed DiscardPile Again with a " + next +"! "
+                              + "\n And is Done!!");
+                      discardPile.addCards(cardsToPlay);
+                      displayState();
+                      discardPile.dealAll(bomb);
+                      
+                      player = nextPlayer(player);
+                      playNext = player.playNext2(this);
+                      setPrevCard(playNext.last());
+                      displayState();
+                     }// End if(!PlayerSH.playerIsDone(player))
+                }//End if(!tenBomb(prev))
             }//End While
-         }// End if(tenBomb(next))?
+         }// End if(tenBomb(next))
         }//End special card next
     } //End takeTurn2(PlayerSH)
         
@@ -568,6 +567,11 @@ public class ShitHead {
                             System.out.println(player.getName() + " is CurrentPlayer");
                             cardsToPlay = player.playNext2(this);
                             next = cardsToPlay.last();
+                            
+                            /**In case where playNext2 delivers tenBomb
+                             * can still have a problem if playerIsDone, but impossible
+                             * if playing hand cards*/
+                           tenBombIn3Mirror(player, next);
 
                             setPrevCard(next);
                             setPlayer(player);
@@ -581,15 +585,8 @@ public class ShitHead {
                             discardPile.addCards(cardsToPlay);
                             displayState();
                             draw();
-                            if(tenBomb(next) && !PlayerSH.playerIsDone(player))
-                            {
-                                System.out.println("Player "+ player.getName()+
-                                        " Bombed the discardPile");
-                                discardPile.dealAll(bomb);
-                                displayState();
-                                cardsToPlay = player.playNext2(this);
-                                next = cardsToPlay.last();
-                            }
+                            
+                            tenBombIn3Mirror(player, next);
 
                             setPrevCard(next);
                             setPlayer(player);
@@ -643,6 +640,11 @@ public class ShitHead {
                         System.out.println(player.getName() + " is CurrentPlayer");
                         cardsToPlay = player.playNext2(this);
                         next = cardsToPlay.last();
+                        
+                        /**In case where playNext2 delivers tenBomb
+                         * can still have a problem if playerIsDone, but impossible
+                         * if playing hand cards*/
+                        tenBombIn3Mirror(player, next);
 
                         setPrevCard(next);
                         setPlayer(player);
@@ -657,15 +659,7 @@ public class ShitHead {
                                 next + " card(s)");
                         discardPile.addCards(cardsToPlay);
                         
-                        if(tenBomb(next) && !PlayerSH.playerIsDone(player))
-                        {
-                            System.out.println("Player "+ player.getName()+
-                                    " Bombed the discardPile");
-                            discardPile.dealAll(bomb);
-                            displayState();
-                            cardsToPlay = player.playNext2(this);
-                            next = cardsToPlay.last();
-                        }
+                        tenBombIn3Mirror(player, next);
 
                         setPrevCard(discardPile.last());
                         setPlayer(player);
@@ -690,7 +684,7 @@ public class ShitHead {
                             " plays Hole card (fm 3Mirror) " + next);
                     discardPile.addCard(next);
                     
-                    if(tenBomb(next))
+                    while(tenBomb(next))
                     {
                         System.out.println("Player "+player.getName()+
                                 " Bombed the discardPile from the Hole");
@@ -704,6 +698,10 @@ public class ShitHead {
                         CardHand cardsToPlay = player.playNext2(this);
                         next = cardsToPlay.last();
                         }
+                    }
+                    
+                    if(next.getRankAceHi() == 3) {
+                        next.equals(tgtMatch);
                     }
 
                     setPrevCard(next);
@@ -729,6 +727,35 @@ public class ShitHead {
             }//End Hand.empty() && River.empty()
            return player;  
         }//End method threeMirrorPlay(PlayerSH player, Card tgtMatch)
+
+        /**In case where playNext2 delivers tenBomb
+         * can still have a problem if playerIsDone, but impossible
+         * if playing hand cards unless nextPlayer doesn't have
+         * Hand or River cards.
+         * 
+         * Prints Player Bombed DiscardPile.
+         * 
+         * @param player
+         * @param next
+         */
+        public void tenBombIn3Mirror(PlayerSH player, Card next) {
+            CardHand cardsToPlay;
+            while(tenBomb(next))
+            {
+                System.out.println("Player "+player.getName()+
+                        " Bombed the discardPile from the threeMirror method ");
+                discardPile.dealAll(bomb);
+                if(!PlayerSH.playerIsDone(player)) {
+                   cardsToPlay = player.playNext2(this);
+                    next = cardsToPlay.last();
+                }else 
+                 {player = nextPlayer(player);
+                System.out.println(player.getName() + " is CurrentPlayer");
+                cardsToPlay = player.playNext2(this);
+                next = cardsToPlay.last();
+                }
+            }
+        }
         
     /**OptimizeRiver()
      * For each Player:

@@ -162,8 +162,10 @@ public class PlayerSH {
         return null;
     }//End pickRandomHoleCard2
 
-    /**Plays next card when discardPile.empty()
-     * playNext2 never returns 'null'
+    /**Plays next card when discardPile.empty().
+     * 
+     * playNext2 never returns 'null'.
+     * 
      * Adds card(s) to discardPile.
      * Added handler for playNext call when player isDone
      * 
