@@ -212,7 +212,7 @@ public class PlayerSH {
             shitHead.draw();
             return playNext;
     
-        }// End PlayeNext.!Hand.empty().
+        }// End PlayeNext2.!Hand.empty().
     
         if(!river.empty()) {
             /*    Looking for not special RCards */
@@ -249,7 +249,7 @@ public class PlayerSH {
                   shitHead.discardPile.last() + " card(s).");
             shitHead.draw();
             return playNext;
-        }// End PlayeNext.!river.empty().
+        }// End PlayeNext2.!river.empty().
     
         /*Problem when last hole card is a tenBomb. Leads to trying 
          * to play another card when do not have any left*/      

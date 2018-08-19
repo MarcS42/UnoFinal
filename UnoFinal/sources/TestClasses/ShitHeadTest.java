@@ -2,8 +2,9 @@ package TestClasses;
 
 import Main.uno3.Card;
 import Main.uno3.CardHand;
-import Main.uno3.PlayerSH;
-import Main.uno3.ShitHead;
+import Main.uno3.*;
+import Main.uno3.SpecialCardsSH;
+
 import java.util.ArrayList;
 
 public class ShitHeadTest {
@@ -21,7 +22,7 @@ public class ShitHeadTest {
     public static void main(String[] args) {
         ShitHead game = new ShitHead();
         
-        game.playGame();
+       game.playGame();
 //ArrayList<Card> cards = new ArrayList<>();
 //Card threeC = new Card(3,0,true);
 //Card threeD = new Card(3,1,true);
@@ -41,19 +42,20 @@ public class ShitHeadTest {
 ////System.out.println(c);
 ////
 ////if(cards.contains(kingS)) System.out.println(kingS);
-// 
+ 
 //ArrayList<Card> discardPileAL = new ArrayList<>();
 //
 //CardHand discardPile = new CardHand("disPile", discardPileAL);
 //
 //discardPile.addCard(twoC);
-//discardPile.addCard(kingS);
-//discardPile.addCard(kingH);
-//discardPile.addCard(threeC);
 //discardPile.addCard(threeS);
+//discardPile.addCard(kingH);
+//discardPile.addCard(kingS);
+//discardPile.addCard(threeC);
 //discardPile.addCard(threeH);
 //discardPile.addCard(threeD);
 //
+//System.out.println("FourOfAKindBomb is: " + SpecialCardsSH.fourOfaKindBomb(discardPile));
 //System.out.println("disPile Size:\n"+discardPile.size()+"\nnumThreeMirrors returned:\n"+numThreeMirrors(discardPile));
 //
 //Card tgtMatch = 

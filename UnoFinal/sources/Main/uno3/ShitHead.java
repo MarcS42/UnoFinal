@@ -513,9 +513,12 @@ public class ShitHead {
         }//End special card next
     } //End takeTurn2(PlayerSH)
         
-        /**Fixed tenBomb code, but should refactor into a
+        /**Fixed tenBomb code, refactored into a
          *   method tenBombInThreeMirror.
-         * 
+         * Each CardHand (Hand, River, Hole has 3 possible outcomes:
+         * 1) next is a 3Mirror;
+         * 2) next == null
+         * 3) next != null && next != 3Mirror (i.e. another card(s) is played)
          * @param player
          * @param tgtMatch
          * @return
@@ -571,7 +574,7 @@ public class ShitHead {
                             /**In case where playNext2 delivers tenBomb
                              * can still have a problem if playerIsDone, but impossible
                              * if playing hand cards*/
-                           tenBombIn3Mirror(player, next);
+                            tenBombIn3Mirror(player, next, tgtMatch);
 
                             setPrevCard(next);
                             setPlayer(player);
@@ -586,7 +589,7 @@ public class ShitHead {
                             displayState();
                             draw();
                             
-                            tenBombIn3Mirror(player, next);
+                            tenBombIn3Mirror(player, next, tgtMatch);
 
                             setPrevCard(next);
                             setPlayer(player);
@@ -644,7 +647,7 @@ public class ShitHead {
                         /**In case where playNext2 delivers tenBomb
                          * can still have a problem if playerIsDone, but impossible
                          * if playing hand cards*/
-                        tenBombIn3Mirror(player, next);
+                        tenBombIn3Mirror(player, next, tgtMatch);
 
                         setPrevCard(next);
                         setPlayer(player);
@@ -659,7 +662,7 @@ public class ShitHead {
                                 next + " card(s)");
                         discardPile.addCards(cardsToPlay);
                         
-                        tenBombIn3Mirror(player, next);
+                        tenBombIn3Mirror(player, next, tgtMatch);
 
                         setPrevCard(discardPile.last());
                         setPlayer(player);
@@ -700,7 +703,7 @@ public class ShitHead {
                         }
                     }
                     
-                    if(next.getRankAceHi() == 3) {
+                    if(threeMirror(next)) {
                         next.equals(tgtMatch);
                     }
 
@@ -737,8 +740,9 @@ public class ShitHead {
          * 
          * @param player
          * @param next
+         * @param tgtMatch 
          */
-        public void tenBombIn3Mirror(PlayerSH player, Card next) {
+        public void tenBombIn3Mirror(PlayerSH player, Card next, Card tgtMatch) {
             CardHand cardsToPlay;
             while(tenBomb(next))
             {
@@ -754,6 +758,10 @@ public class ShitHead {
                 cardsToPlay = player.playNext2(this);
                 next = cardsToPlay.last();
                 }
+            }
+            
+            if(threeMirror(next)) {
+                next.equals(tgtMatch);
             }
         }
         
@@ -873,27 +881,6 @@ public class ShitHead {
 
     public void playFirstCard2() {
         player.playNext2(this);
-        
-//        ArrayList<Card> firstCards;
-//        for(int i = 0; i < handSize; i++) {
-//            Card f1 = player.getHand().getCards().get(i);
-//            
-//            if(!specialCardSH(f1)) {
-//             firstCards.add(player.getHand().popCard(i));
-//                System.out.println("FirstPlayer "+ player.getName()+" plays "+ firstCard);
-//                discardPile.addCard(firstCard);
-//                draw();
-//            } else {
-//                continue;
-//            }
-//        }
-//        // if firstPlayer only has special cards
-//        if(firstCard == null) {
-//            firstCard = player.getHand().popCard(0);
-//            discardPile.addCard(firstCard);
-//            System.out.println("FirstPlayer only has special HCards " +
-//            player.getName()+" plays "+ firstCard);
-//        }  
     }// End playFirstCard2().
     
     public PlayerSH nextPlayer(PlayerSH currentPlayer) {
@@ -960,20 +947,5 @@ public class ShitHead {
         return fourOfaKind;
     }
 
-    public boolean cardCountMoreThan52() {
-        int playerSum, playersSum=0, ShSum;
-        for(PlayerSH p:players) {
-            playerSum=p.getHand().size()+
-                    p.getRiver().size()+p.getHole().size();
-            playersSum=+playerSum;
-        }
-        ShSum = bomb.size()+discardPile.size()+
-                drawPile.size();
-        if(playersSum+ShSum > 52) {
-           return true; 
-        }
-        return false;
-    }
-    
 
 }// End ShitHead class

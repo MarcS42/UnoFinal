@@ -1,7 +1,5 @@
 package Main.uno3;
 
-import java.lang.Math.*;
-
 public class SpecialCardsSH extends Card {
     
     /**
@@ -65,9 +63,21 @@ public class SpecialCardsSH extends Card {
    public static int numThreeMirrors(CardHand discardPile) {
        int count=1;
        for(int i = discardPile.size()-1; i > Math.max(discardPile.size()-4,0); i--) {
-           if((discardPile.getCard(i).getRankAceHi()==3) && (discardPile.getCard(i-1).getRankAceHi()==3)) {
+           if(threeMirror(discardPile.getCard(i)) && threeMirror(discardPile.getCard(i-1))) {
                count++;
-           }
+           }else 
+             {return count;}
+       }
+    return count;
+   }
+   
+   public static int numCardsMatchingRank(CardHand discardPile) {
+       int count=0;
+       for(int i = discardPile.size()-1; i > Math.max(discardPile.size()-4,0); i--) {
+           if(cardsMatchRank(discardPile.getCard(i), discardPile.getCard(i-1))) {
+               count++;
+           }else 
+             {return count;}
        }
     return count;
    }
@@ -94,9 +104,9 @@ public class SpecialCardsSH extends Card {
  * @param card
  * @return
  */
-public static boolean fourOfaKindBomb(Card card) {
+public static boolean fourOfaKindBomb(CardHand discardPile) {
        fourOfaKindBomb = false;
-       if(ShitHead.isFourOfaKind() == true) {
+       if(numCardsMatchingRank(discardPile)==3) {
            return true;
        }
        return fourOfaKindBomb;

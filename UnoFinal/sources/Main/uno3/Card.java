@@ -70,6 +70,26 @@ public class Card implements Serializable {
         return false;
     }
 
+    /**Determines if card1 Rank matches card2 Rank.
+     * @param card1 Prev. card you are trying to match
+     * @param card2 Card that is potential match
+     * @return true/false
+     */
+    public static boolean cardsMatchRank(Card card1, 
+            Card card2) { 
+        //card1 = previous card
+        if(!isAceHi()) {
+            if (card1.getRank() == card2.getRank()) {
+                return true;
+            }
+        } else {
+            if (card1.getRankAceHi() == card2.getRankAceHi()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**Determines if card2 playable after card1, independent of
      *  Suits.
      *   'Playable' means "> than or = to"
