@@ -466,42 +466,9 @@ public class ShitHead {
                     setTenBomb(false);
                     displayState();
                     player = nextPlayer(player);
-                } else // is FoaK
-                  { 
-                    setFourOfaKind(true);
-                    int count = cardsToPlay.size();
-                     while(isFourOfaKind()) 
-                     {
-                         System.out.println("Player "+player.getName()+
-                                 " Four-of-a-Kind Bombed DiscardPile, "
-                                 + "\nPlaying " + count + " x " + next + " card(s)");
-                         displayState();
-                         discardPile.dealAll(bomb);
-                         
-                       if(!PlayerSH.playerIsDone(player))
-                       {
-                        CardHand playNext = player.playNext2(this);
-                        setPrevCard(playNext.last());
-                        displayState();//Maybe get rid of this one??
-                        
-                       fourOfAKindInPlayNext2(next, playNext);
-                       } else //player isDone
-                       {
-                        System.out.println(player.getName() + " is Done After FoAK Bomb from the Hole!");
-                       player = nextPlayer(player);
-                       System.out.println(player.getName() + " is CurrentPlayer");
-                       CardHand playNext = player.playNext2(this);
-                       next = cardsToPlay.last();
-                       setPrevCard(playNext.last());
-                       displayState();
-                       
-                       fourOfAKindInPlayNext2(next, playNext);
-                       }// else because previous player is done
-                       
-                     }//End While(isFourOfAKind)
-                   setFourOfaKind(false);
-                }// End if(!fourOfaKindBomb(discardPile))
-            }
+                }
+                else next = fourOfAKindHandler(cardsToPlay, next);
+            }// End if(next==(null) && !isDone())
 
         /**
          * Actions needed when NEXT card is special card
@@ -519,6 +486,7 @@ public class ShitHead {
              discardPile.addCards(cardsToPlay);
              displayState();
              discardPile.dealAll(bomb);
+             
              CardHand playNext = player.playNext2(this);
              setPrevCard(playNext.last());
              displayState();
@@ -543,10 +511,54 @@ public class ShitHead {
                       displayState();
                      }// End if(!PlayerSH.playerIsDone(player))
                 }//End if(!tenBomb(prev))
-            }//End While
+            }//End While(isTenBomb() && !PlayerSH.playerIsDone(player))
          }// End if(tenBomb(next))
         }//End special card next
     } //End takeTurn2(PlayerSH)
+
+    /**
+     * @param cardsToPlay
+     * @param next
+     * @return
+     */
+    public Card fourOfAKindHandler(CardHand cardsToPlay, Card next) {
+        { 
+            setFourOfaKind(true);
+            int count = cardsToPlay.size();
+             while(isFourOfaKind()) 
+             {
+                 System.out.println("Player "+player.getName()+
+                         " Four-of-a-Kind Bombed DiscardPile, "
+                         + "\nPlaying " + count + " x " + next + " card(s)");
+                 displayState();
+                 discardPile.dealAll(bomb);
+                 draw();
+                 
+               if(!PlayerSH.playerIsDone(player))
+               {
+                CardHand playNext = player.playNext2(this);
+                setPrevCard(playNext.last());
+                displayState();
+                
+               fourOfAKindInPlayNext2(next, playNext);
+               } else //player isDone
+               {
+                System.out.println(player.getName() + " is Done After FoAK Bomb from the Hole!");
+               player = nextPlayer(player);
+               System.out.println(player.getName() + " is CurrentPlayer");
+               CardHand playNext = player.playNext2(this);
+               next = cardsToPlay.last();
+               setPrevCard(playNext.last());
+               displayState();
+               
+               fourOfAKindInPlayNext2(next, playNext);
+               }// else because previous player is done
+               
+             }//End While(isFourOfAKind)
+           setFourOfaKind(false);
+        }// End if(!fourOfaKindBomb(discardPile))
+        return next;
+    }
 
     /**
      * @param next
@@ -613,6 +625,8 @@ public class ShitHead {
                                     " plays from Lp1 "+ numCardsPlayed+ " x " + next+ " cards(s).");
                             discardPile.addCards(cardsToPlay);
                             draw();
+                            
+                         if(!fourOfaKindBomb(discardPile)) {
                             threeMsMatchChK=true;
                             
                             player = nextPlayer(player);
@@ -622,6 +636,7 @@ public class ShitHead {
                             displayState();
                             
                          continue;
+                         } else next = fourOfAKindHandler(cardsToPlay, next);
 
                         }// End if((next !=null) && threeMirror(next))
 

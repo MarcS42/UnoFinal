@@ -71,7 +71,13 @@ public class SpecialCardsSH extends Card {
     return count;
    }
    
-   public static int numCardsMatchingRank(CardHand discardPile) {
+ /**Used in Four-of-a-Kind Bomb search
+ * 
+ * @param discardPile: CardHand to be searched
+ * @return Number of consecutive cards at the end of CardHand
+ *   that have the same Rank
+ */
+public static int numCardsMatchingRank(CardHand discardPile) {
        int count=0;
        for(int i = discardPile.size()-1; i > Math.max(discardPile.size()-4,0); i--) {
            if(cardsMatchRank(discardPile.getCard(i), discardPile.getCard(i-1))) {
