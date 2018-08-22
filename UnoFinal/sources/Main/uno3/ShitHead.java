@@ -30,6 +30,8 @@ public class ShitHead {
     private boolean firstPass;
     private int handSize;
     private int riverSize;
+    private int handCount;
+    private int foakCount;
     
 
     public ShitHead() {//ShitHead Constructor
@@ -100,7 +102,8 @@ public class ShitHead {
         setFirstPass(true);
         setPlayer(players.get(0));
         prev = null;
-
+        handCount = 0;
+        foakCount = 0;
                 
     }// End Constructor SH
 
@@ -176,6 +179,7 @@ public class ShitHead {
      * @return isGameOver?
      */
     public boolean isDone() {
+        this.handCount++;
         for (int i = 0; i < players.size(); i++) {
             if (PlayerSH.playerIsDone(players.get(i))) 
             {
@@ -187,7 +191,9 @@ public class ShitHead {
                 {
                 System.out.println("***********Player " + 
                         players.get(0).getName() + " is a "
-                                + "ShitHead!**********\n" + "********Game Over!*********");
+                                + "ShitHead!**********\n" + "********Game Over!*********" + 
+                        "\nHands Played: " + handCount + 
+                        "\nFour-of-A-Kind Bombs Played: " + foakCount);
                 return true; 
                 }
         }
@@ -230,147 +236,25 @@ public class ShitHead {
             }
         }
 
-        //**********************************************************************
-        /** ShitHead- Basic functioning of game is (see takeTurn()) below. 
-        * a) First Pass actions:
-        *       1) optimizeRiver() Cards with Hand cards;
-        *       2) FirstPlayer playFirstCard()'s !Special, draw new card;
-        *       3) Advance nextPlayer(Player);
-        *       4) displayState().
-        * b) Start with previous card == discardPile.last;
-        * c) try to match it with what you have; 
-        *   c1) if previous is 3Mirror, exit standard 
-        *   play waterfall to handle this card where 
-        *   multiple cards played in sequence changes regular 
-        *   waterfall;
-        * d) Eventually, if no Match, pickup discardPile;
-        * e) Next card played becomes previous card to following
-        *   player.
-        * 
-        */
-    public void takeTurn() {
-
-        /**
-         * Start firstPass
-         * 
-         */
-        if(isFirstPass()) {
-            optimizeRiver();
-            pickFirstPlayer();
-            playFirstCard();
-            player = nextPlayer(player);
-            setFirstPass(false);
-            displayState();
-        }
-
-        /**
-         * Problem is if players last hole card is tenBomb.
-         * Discard Pile.size()= 0, yet game is still trying to
-         * get tenBomb player to playNext()     
-         */
-        if(!PlayerSH.playerIsDone(player)) {
-            System.out.println("Player into TakeTurn() = " 
-                    + player.getName());
-        } else {
-            player = nextPlayer(player);
-            System.out.println("Player into TakeTurn()#2 = " 
-                    + player.getName());
-            player.playNext2(this);//needed if last card tenBomb && playerDone
-            player = nextPlayer(player);
-            System.out.println("Next Player into TakeTurn()#3 = " 
-                    + player.getName());
-        }
-
-        if(!discardPile.empty()) {
-            prev = discardPile.last();
-        }else {prev = player.playNext(this);}
-
-        /**
-         * Start actions for previous card = Special
-         */
-        if(specialCardNt7SH(prev)) {
-
-            if (threeMirror(prev) && discardPile.size() >= 2) 
-            {
-
-                Card tgtMatch = 
-                        discardPile.getCard(Math.max((discardPile.size()-numThreeMirrors(discardPile)-1),0));
-                threeMirrorPlay(player, tgtMatch);
-                
-                if(!isDone()) {
-                player=nextPlayer(player);
-                System.out.println("Player out 3Mirror " + player.getName() +
-                        " is next player: ");
-                }
-            }
-
-        }//End actions for previous card = Special
-
-        Card next = player.play(this, prev);
-        if(next==(null) && !isDone()) {
-            System.out.println(player.getName() + " picked up DiscardPile.");
-            player = nextPlayer(player);
-            System.out.println(player.getName() + " is CurrentPlayer");
-            next = player.playNext(this);
-            displayState();
-            player = nextPlayer(player);
-        }else 
-            if(!tenBomb(next))
-            {
-                discardPile.addCard(next);
-                System.out.println(player.getName()+ " plays "+ next);
-                System.out.println("");
-                setTenBomb(false);
-                displayState();
-                player = nextPlayer(player);
-            }
-
-        /**
-         * Actions needed when NEXT card is special card
-         */
-        if (specialCardSH(next)) {
-
-         if(tenBomb(next)) 
-         {
-         setTenBomb(true);
-         int count = 0;
-          while(isTenBomb() && !PlayerSH.playerIsDone(player))
-            {count++;
-             setPlayer(player);
-             System.out.println(player.getName() + 
-                   " Bombed DiscardPile " + count + " times");
-             discardPile.addCard(next);
-             displayState();
-             discardPile.dealAll(bomb);
-             setPrevCard(player.playNext(this));
-             displayState();
-             
-                if(!tenBomb(prev)) {
-                    setTenBomb(false);    
-                    player = nextPlayer(player);
-                      } else 
-                         {
-                          if(!PlayerSH.playerIsDone(player)) 
-                         {
-                          continue;
-                         }  else {System.out.println(player.getName() + " Bombed DiscardPile Again with a " + next +"! " + "\n And is Done!!");
-                          discardPile.addCard(prev);
-                          displayState();
-                          discardPile.dealAll(bomb);
-                          
-                          player = nextPlayer(player);
-                          setPrevCard(player.playNext(this));
-                          displayState();
-                         }// End if(!PlayerSH.playerIsDone(player))
-                    }//End if(!tenBomb(prev))
-            }//End While
-         }// End if(tenBomb(next))?
-        }//End special card next
-    } //End takeTurn(PlayerSH)
+//**********************************************************************
  
     /**takeTurn2 is the multiple playable cards version of ShitHead
-     * 
-     */
+     *ShitHead- Basic functioning of game is (see takeTurn2()) below. 
+     * a) First Pass actions:
+     *       1) optimizeRiver() Cards with Hand cards;
+     *       2) FirstPlayer playFirstCard()'s !Special, draw new card;
+     *       3) Advance nextPlayer(Player);
+     *       4) displayState().
+     * b) Start with previous card == discardPile.last;
+     * c) try to match it with what you have; 
+     *   c1) if previous is 3Mirror, exit standard 
+     *   play waterfall to handle this card where 
+     *   multiple cards played in sequence changes regular 
+     *   waterfall;
+     * d) Eventually, if no Match, pickup discardPile;
+     * e) Next card played becomes previous card to following
+     *   player.
+     */ 
     public void takeTurn2() {
 
         /**
@@ -386,24 +270,8 @@ public class ShitHead {
             displayState();
         }
 
-        /**
-         * Problem is if players last hole card is tenBomb.
-         * Discard Pile.size()= 0, yet game is still trying to
-         * get tenBomb player to playNext()     
-         */
-        if(!PlayerSH.playerIsDone(player)) {
             System.out.println("Player into TakeTurn() = " 
                     + player.getName());
-        } else {
-            player = nextPlayer(player);
-            System.out.println("Player into TakeTurn()#2 = " 
-                    + player.getName());
-            CardHand playNext = player.playNext2(this);//needed if last card tenBomb && playerDone
-            setPrevCard(playNext.last());
-            player = nextPlayer(player);
-            System.out.println("Next Player into TakeTurn()#3 = " 
-                    + player.getName());
-        }
 
         if(!discardPile.empty()) {
             prev = discardPile.last();
@@ -478,9 +346,10 @@ public class ShitHead {
          if(tenBomb(next)) 
          {
          setTenBomb(true);
-         int count = cardsToPlay.size();
           while(isTenBomb() && !PlayerSH.playerIsDone(player))
-            {setPlayer(player);
+            {
+              int count = cardsToPlay.size();
+              setPlayer(player);
              System.out.println(player.getName() + 
                         " Bombed DiscardPile " + count + " times");
              discardPile.addCards(cardsToPlay);
@@ -516,10 +385,11 @@ public class ShitHead {
         }//End special card next
     } //End takeTurn2(PlayerSH)
 
-    /**
+    /** handles FoAK Bomb including FoAK in PlayNext2.
+     * resets fourOfAKind boolean to false.
      * @param cardsToPlay
      * @param next
-     * @return
+     * @return next card after FoAK has been played
      */
     public Card fourOfAKindHandler(CardHand cardsToPlay, Card next) {
         { 
@@ -527,6 +397,7 @@ public class ShitHead {
             int count = cardsToPlay.size();
              while(isFourOfaKind()) 
              {
+                 this.foakCount++;
                  System.out.println("Player "+player.getName()+
                          " Four-of-a-Kind Bombed DiscardPile, "
                          + "\nPlaying " + count + " x " + next + " card(s)");
@@ -537,7 +408,8 @@ public class ShitHead {
                if(!PlayerSH.playerIsDone(player))
                {
                 CardHand playNext = player.playNext2(this);
-                setPrevCard(playNext.last());
+                next = playNext.last();
+                setPrevCard(next);
                 displayState();
                 
                fourOfAKindInPlayNext2(next, playNext);
@@ -548,7 +420,7 @@ public class ShitHead {
                System.out.println(player.getName() + " is CurrentPlayer");
                CardHand playNext = player.playNext2(this);
                next = cardsToPlay.last();
-               setPrevCard(playNext.last());
+               setPrevCard(next);
                displayState();
                
                fourOfAKindInPlayNext2(next, playNext);
@@ -932,30 +804,6 @@ public class ShitHead {
         return getPlayer();
     }//End pickFirstPlayer
 
-    public void playFirstCard() {
-        Card firstCard = null;
-        for(int i = 0; i < handSize; i++) {
-            if(firstCard == null) {
-                Card f1 = player.getHand().getCards().get(i);
-                if(!specialCardSH(f1)) {
-                    firstCard = player.getHand().popCard(i);
-                    System.out.println("FirstPlayer "+ player.getName()+" plays "+ firstCard);
-                    discardPile.addCard(firstCard);
-                    draw();
-                } else {
-                    continue;
-                }
-            }
-        }
-        // if firstPlayer only has special cards
-        if(firstCard == null) {
-            firstCard = player.getHand().popCard(0);
-            discardPile.addCard(firstCard);
-            System.out.println("FirstPlayer only has special HCards " +
-            player.getName()+" plays "+ firstCard);
-        }  
-    }// End playFirstCard().
-
     public void playFirstCard2() {
         player.playNext2(this);
     }// End playFirstCard2().
@@ -986,7 +834,9 @@ public class ShitHead {
     public CardHand getDiscardPile() {
         return discardPile;
         
-    }public CardHand getDrawPile() {
+    }
+    
+    public CardHand getDrawPile() {
         return drawPile;
     }
 
