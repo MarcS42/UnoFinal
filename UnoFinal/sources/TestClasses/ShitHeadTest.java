@@ -1,11 +1,7 @@
 package TestClasses;
 
-import Main.uno3.Card;
 import Main.uno3.CardHand;
 import Main.uno3.*;
-import Main.uno3.SpecialCardsSH;
-
-import java.util.ArrayList;
 
 public class ShitHeadTest {
 

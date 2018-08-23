@@ -62,8 +62,10 @@ public class CardDeck implements Serializable{
    */
     public static CardDeck cloneDeck(CardDeck deck) {
         ArrayList<Card> deckCopy = new ArrayList<>();
+        
         CardDeck deckClone = new CardDeck("DeckCopy", deckCopy);
-        for(Card d:deckCopy) {
+        
+        for(Card d:deck.getCards()) {
             deckClone.getCards().add(d);
         }
         serializeCardDeck(deckClone);
@@ -85,18 +87,29 @@ public class CardDeck implements Serializable{
       }
   }
 
-  /**
+ /**Problem was in deserialization method. 
+ * When you set CardDeck = null, and later use it to cast
+ * deserialized object, prgm needs to now what TYPE of
+ * CardDeck cast to cast to. Cure was to use AceHi 
+ * constructor to create a new CardDeck("Deck", true),
+ * and then set that deck to null before the deserialization
+ * and cast.
  * @return CardDeck from savedFile.ser
  */
 public static CardDeck deserializeCardDeck() {
       String filename = getFileName();
-
-      CardDeck deck = null;
+/**
+ * this is key step so that deck variable is cast
+ * to ShitHead type of deck (AceHi)
+ * */
+      CardDeck deck = new CardDeck("Deck",true);
+      deck = null; // set to 'null' to avoid overwrite exception
 
       try (ObjectInputStream ois 
               = new ObjectInputStream(new FileInputStream(filename))) {
 
           deck = (CardDeck) ois.readObject();
+          
           System.out.println("Deserializatoin Done");
           System.out.println("");
 

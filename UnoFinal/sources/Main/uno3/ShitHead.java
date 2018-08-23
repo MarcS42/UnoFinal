@@ -56,8 +56,13 @@ public class ShitHead {
         discardPile = new CardHand("disPile", disPile);
         bomb = new CardHand("bomPile", bomPile);
 
-        /** Fix needed, test failed. derserialization returns Hands/Piles w/Null
-         *  for Card rank
+        /** Fixed! Problem was in deserialization method. 
+         * When you set CardDeck = null, and later use it to cast
+         * deserialized object, prgm needs to now what TYPE of
+         * CardDeck cast to cast to. Cure was to use AceHi 
+         * constructor to create a new CardDeck("Deck", true),
+         * and then set that deck to null before the deserialization
+         * and cast.
          * 
          * Debugging tool lets you repeat a game with the same 
          * Deck and initial deal. 
@@ -66,7 +71,7 @@ public class ShitHead {
          * 1) the hole card played is selected at random, and 
          * 2) each hole card played is not memorized.
          */
-        debug = false;
+        debug = true;
         CardDeck deck;
         if(!debug) {
             deck = new CardDeck("Deck", true);//AceHiLo Constructor of CardDeck
