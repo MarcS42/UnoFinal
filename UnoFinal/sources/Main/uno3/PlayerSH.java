@@ -524,9 +524,6 @@ public class PlayerSH {
         }//End for(j=0; j<wSVal; j++)
     }//End for(int wSPosit=0; wSPosit < workingSet.size(); wSPosit++)
     
-    System.out.println("Four-of-A-Kind: \n" + quads0 + "\nTriples: \n" + triples0 +
-            "\nDoubles: \n" + doubles0 + "\nSingles: \n" + singles0);
-    
     sdtq0.add(singles0);
     sdtq0.add(doubles0);
     sdtq0.add(triples0);

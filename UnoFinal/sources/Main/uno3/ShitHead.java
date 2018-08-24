@@ -71,7 +71,7 @@ public class ShitHead {
          * 1) the hole card played is selected at random, and 
          * 2) each hole card played is not memorized.
          */
-        debug = true;
+        debug = false;
         CardDeck deck;
         if(!debug) {
             deck = new CardDeck("Deck", true);//AceHiLo Constructor of CardDeck
@@ -362,7 +362,9 @@ public class ShitHead {
              discardPile.dealAll(bomb);
              
              CardHand playNext = player.playNext2(this);
-             setPrevCard(playNext.last());
+             next =playNext.last();
+             setPrevCard(next);
+             fourOfAKindInPlayNext2(next, playNext);
              displayState();
              
             if(!tenBomb(prev)) {
@@ -381,7 +383,9 @@ public class ShitHead {
                       
                       player = nextPlayer(player);
                       playNext = player.playNext2(this);
-                      setPrevCard(playNext.last());
+                      next =playNext.last();
+                      setPrevCard(next);
+                      fourOfAKindInPlayNext2(next, playNext);
                       displayState();
                      }// End if(!PlayerSH.playerIsDone(player))
                 }//End if(!tenBomb(prev))
@@ -464,261 +468,277 @@ public class ShitHead {
                }//End if(!fourOfaKindBomb(playNext))
     }
         
-        /**Fixed tenBomb code, refactored into a
-         *   method tenBombInThreeMirror.
-         * Each CardHand (Hand, River, Hole has 3 possible outcomes:
-         * 1) next is a 3Mirror;
-         * 2) next == null
-         * 3) next != null && next != 3Mirror (i.e. another card(s) is played)
-         * @param player
-         * @param tgtMatch
-         * @return
-         */
-        public PlayerSH threeMirrorPlay(PlayerSH player, Card tgtMatch) {
-
-            boolean threeMsMatchChK = true;
-
-            if(!player.getHand().empty()) {
-
-             /*****Looking for threeMirrors in Hand cards****/
-
-                    while(threeMsMatchChK) 
-                    {
-                        CardHand cardsToPlay = player.searchForMatch2(tgtMatch);
-                        Card next;
-                        int numCardsPlayed;
-                        
-                /**code below fixes issue of trying to popCard() 
-                 *   from CardHand that is null****/        
-                        if(cardsToPlay != null) {
-                        next = cardsToPlay.last();
-                        numCardsPlayed = cardsToPlay.size();
-                        } else next = null;
-
-                        if((next !=null) && threeMirror(next)) 
-                        {
-                            numCardsPlayed= cardsToPlay.size();
-                            System.out.println("Player " + player.getName() +
-                                    " plays from Lp1 "+ numCardsPlayed+ " x " + next+ " cards(s).");
-                            discardPile.addCards(cardsToPlay);
-                            draw();
-                            
-                         if(!fourOfaKindBomb(discardPile)) {
-                            threeMsMatchChK=true;
-                            
-                            player = nextPlayer(player);
-                            setPlayer(player);
-                            System.out.println("Player " + player.getName() +
-                                    " is next player out 3Match after LP1: ");
-                            displayState();
-                            
-                         continue;
-                         } else next = fourOfAKindHandler(cardsToPlay, next);
-
-                        }// End if((next !=null) && threeMirror(next))
-
-                        if(next==null) {
-                            discardPile.dealAll(player.getHand());
-                            System.out.println(player.getName() + " picked up DiscardPile.");
-                            player = nextPlayer(player);
-                            System.out.println(player.getName() + " is CurrentPlayer");
-                            cardsToPlay = player.playNext2(this);
-                            next = cardsToPlay.last();
-                            
-                            /**In case where playNext2 delivers tenBomb
-                             * can still have a problem if playerIsDone, but impossible
-                             * if playing hand cards*/
-                            tenBombIn3Mirror(player, next, tgtMatch);
-
-                            setPrevCard(next);
-                            setPlayer(player);
-                            displayState();
-                            return player;   
-                        }else {//!3mirror and !null
-                            numCardsPlayed= cardsToPlay.size();
-                            System.out.println("Player " + player.getName() +
-                                    " plays " + numCardsPlayed + " x " 
-                                    + next + " card(s)");
-                            discardPile.addCards(cardsToPlay);
-                            displayState();
-                            draw();
-                            
-                            tenBombIn3Mirror(player, next, tgtMatch);
-
-                            setPrevCard(next);
-                            setPlayer(player);
-                            displayState();
-                            return player;
-                        }//End if(next==null)
-                    }// End while(threeMsMatchChK) loop 1
-            }// End if(!player.hand.empty)
-
-            if(!player.getRiver().empty() && player.getHand().empty()) {
-
-             /*****Looking for threeMirrors in River cards****/
-                while(threeMsMatchChK) 
-                {
-                    CardHand cardsToPlay = player.searchForMatch2(tgtMatch);
-                    Card next;
-                    int numCardsPlayed;
-                    
-            /**code below fixes issue of trying to popCard() 
-             *   from CardHand that is null*
-             *   ***/        
-                    if(cardsToPlay != null) {
-                    next = cardsToPlay.last();
-                    numCardsPlayed = cardsToPlay.size();
-                    } else {next = null;
-                    numCardsPlayed = 0;}
-
-                    if((next != null) && threeMirror(next)) 
-                    {
-                        System.out.println("Player " + player.getName() +
-                                " plays from RLp2 " + numCardsPlayed + 
-                                " x " + next + " card(s).");
-                        discardPile.addCards(cardsToPlay);
-                        draw();
-                        threeMsMatchChK=true;
-                        
-                        player = nextPlayer(player);
-                        setPlayer(player);
-                        System.out.println("Player " + player.getName() +
-                                " is next player out 3Match after RLP2: ");
-                        displayState();
-                        
-                     continue;
-
-                    }// End River if((next !=null) && threeMirror(next))
-
-                    if(next==null) {
-                        discardPile.dealAll(player.getHand());
-                        System.out.println(player.getName() + " picked up DiscardPile.");
-                        player = nextPlayer(player);
-                        System.out.println(player.getName() + " is CurrentPlayer");
-                        cardsToPlay = player.playNext2(this);
-                        next = cardsToPlay.last();
-                        
-                        /**In case where playNext2 delivers tenBomb
-                         * can still have a problem if playerIsDone, but impossible
-                         * if playing hand cards*/
-                        tenBombIn3Mirror(player, next, tgtMatch);
-
-                        setPrevCard(next);
-                        setPlayer(player);
-                        displayState();
-                        return player;   
-                    }
-
-                    if(cardsPlayableRankSH(tgtMatch, next))
-                    {                             
-                        System.out.println("Player " + player.getName() +
-                                " plays "+ numCardsPlayed +" x "+ 
-                                next + " card(s)");
-                        discardPile.addCards(cardsToPlay);
-                        
-                        tenBombIn3Mirror(player, next, tgtMatch);
-
-                        setPrevCard(discardPile.last());
-                        setPlayer(player);
-                        displayState();
-                        return player; 
-                    }// End if(cardsPlayableRankSH(tgtMatch, next)
-                }// End for loop 2
-            }// End if(!player.River.empty)
-
-            /****** Playing Hole cards in ThreeMirror *******/
-            if(player.getHand().empty() && player.getRiver().empty())
+    /**Fixed tenBomb code, refactored into a
+     *   method tenBombInThreeMirror.
+     * Each CardHand (Hand, River, Hole has 3 possible outcomes:
+     * 1) next is a 3Mirror;
+     * 2) next == null
+     * 3) next != null && next != 3Mirror (i.e. another card(s) is played)
+     * @param player
+     * @param tgtMatch
+     * @return
+     */
+    public PlayerSH threeMirrorPlay(PlayerSH player, Card tgtMatch) {
+    
+        boolean threeMsMatchChK = true;
+    
+        if(!player.getHand().empty()) {
+    
+         /*****Looking for threeMirrors in Hand cards****/
+    
+            while(threeMsMatchChK) 
             {
-                CardHand cardToPlay = player.pickRandomHoleCard2(tgtMatch);
+                CardHand cardsToPlay = player.searchForMatch2(tgtMatch);
                 Card next;
-                if(cardToPlay != null) {
-                next = cardToPlay.last();
-                } else {next = null;}
+                int numCardsPlayed;
+                
+        /**code below fixes issue of trying to popCard() 
+         *   from CardHand that is null****/        
+                if(cardsToPlay != null) {
+                next = cardsToPlay.last();
+                numCardsPlayed = cardsToPlay.size();
+                } else next = null;
 
-                if(next != null)
-                {                             
-                    System.out.println("Player " + player.getName() +
-                            " plays Hole card (fm 3Mirror) " + next);
-                    discardPile.addCard(next);
-                    
-                    while(tenBomb(next))
-                    {
-                        System.out.println("Player "+player.getName()+
-                                " Bombed the discardPile from the Hole");
-                        discardPile.dealAll(bomb);
-                        if(!PlayerSH.playerIsDone(player)) {
-                           CardHand cardsToPlay = player.playNext2(this);
-                            next = cardsToPlay.last();
-                        }else 
-                         {player = nextPlayer(player);
-                        System.out.println(player.getName() + " is CurrentPlayer");
-                        CardHand cardsToPlay = player.playNext2(this);
-                        next = cardsToPlay.last();
-                        }
-                    }
-                    
-                    if(threeMirror(next)) {
-                        next.equals(tgtMatch);
-                    }
-
-                    setPrevCard(next);
-                    setPlayer(player);
-                    displayState();
-                    return player;
-                }//End if(next != null)
-                else 
+                if((next !=null) && threeMirror(next)) 
                 {
+                    numCardsPlayed= cardsToPlay.size();
+                    System.out.println("Player " + player.getName() +
+                            " plays from Lp1 "+ numCardsPlayed+ " x " + next+ " cards(s).");
+                    discardPile.addCards(cardsToPlay);
+                    draw();
+                    
+                 if(!fourOfaKindBomb(discardPile)) {
+                    threeMsMatchChK=true;
+                    
+                    player = nextPlayer(player);
+                    setPlayer(player);
+                    System.out.println("Player " + player.getName() +
+                            " is next player out 3Match after LP1: ");
+                    displayState();
+                    
+                 continue;
+                 } else next = fourOfAKindHandler(cardsToPlay, next);
+
+                }// End if((next !=null) && threeMirror(next))
+
+                if(next==null) {
                     discardPile.dealAll(player.getHand());
                     System.out.println(player.getName() + " picked up DiscardPile.");
                     player = nextPlayer(player);
                     System.out.println(player.getName() + " is CurrentPlayer");
-                    CardHand cardsToPlay = player.playNext2(this);
+                    cardsToPlay = player.playNext2(this);
                     next = cardsToPlay.last();
-
+                    fourOfAKindInPlayNext2(next, cardsToPlay);
+                    
+                    /**In case where playNext2 delivers tenBomb
+                     * can still have a problem if playerIsDone, but impossible
+                     * if playing hand cards*/
+                    tenBombIn3Mirror(player, next, tgtMatch);
 
                     setPrevCard(next);
                     setPlayer(player);
                     displayState();
                     return player;   
-                }//End if(next==null)
-            }//End Hand.empty() && River.empty()
-           return player;  
-        }//End method threeMirrorPlay(PlayerSH player, Card tgtMatch)
+                }else {//!3mirror and !null
+                    numCardsPlayed= cardsToPlay.size();
+                    System.out.println("Player " + player.getName() +
+                            " plays " + numCardsPlayed + " x " 
+                            + next + " card(s)");
+                    discardPile.addCards(cardsToPlay);
+                    while(fourOfaKindBomb(discardPile)) {
+                        fourOfAKindHandler(cardsToPlay, next);
+                        }
+                    displayState();
+                    draw();
+                    
+                    tenBombIn3Mirror(player, next, tgtMatch);
 
-        /**In case where playNext2 delivers tenBomb
-         * can still have a problem if playerIsDone, but impossible
-         * if playing hand cards unless nextPlayer doesn't have
-         * Hand or River cards.
-         * 
-         * Prints Player Bombed DiscardPile.
-         * 
-         * @param player
-         * @param next
-         * @param tgtMatch 
-         */
-        public void tenBombIn3Mirror(PlayerSH player, Card next, Card tgtMatch) {
-            CardHand cardsToPlay;
-            while(tenBomb(next))
+                    setPrevCard(next);
+                    setPlayer(player);
+                    displayState();
+                    return player;
+                }//End if(next==null)
+            }// End while(threeMsMatchChK) loop 1
+    }// End if(!player.hand.empty)
+    
+        if(!player.getRiver().empty() && player.getHand().empty()) {
+    
+         /*****Looking for threeMirrors in River cards****/
+            while(threeMsMatchChK) 
             {
-                System.out.println("Player "+player.getName()+
-                        " Bombed the discardPile from the threeMirror method ");
-                discardPile.dealAll(bomb);
-                if(!PlayerSH.playerIsDone(player)) {
-                   cardsToPlay = player.playNext2(this);
-                    next = cardsToPlay.last();
-                }else 
-                 {player = nextPlayer(player);
-                System.out.println(player.getName() + " is CurrentPlayer");
-                cardsToPlay = player.playNext2(this);
+                CardHand cardsToPlay = player.searchForMatch2(tgtMatch);
+                Card next;
+                int numCardsPlayed;
+                
+        /**code below fixes issue of trying to popCard() 
+         *   from CardHand that is null*
+         *   ***/        
+                if(cardsToPlay != null) {
                 next = cardsToPlay.last();
+                numCardsPlayed = cardsToPlay.size();
+                } else {next = null;
+                numCardsPlayed = 0;}
+    
+                if((next != null) && threeMirror(next)) 
+                {
+                    System.out.println("Player " + player.getName() +
+                            " plays from RLp2 " + numCardsPlayed + 
+                            " x " + next + " card(s).");
+                    discardPile.addCards(cardsToPlay);
+                    draw();
+                    
+                    if(!fourOfaKindBomb(discardPile)) {
+                        threeMsMatchChK=true;
+                        
+                        player = nextPlayer(player);
+                        setPlayer(player);
+                        System.out.println("Player " + player.getName() +
+                                " is next player out 3Match after LP1: ");
+                        displayState();
+                        
+                     continue;
+                     } else next = fourOfAKindHandler(cardsToPlay, next);
+    
+                }// End River if((next !=null) && threeMirror(next))
+    
+                if(next==null) {
+                    discardPile.dealAll(player.getHand());
+                    System.out.println(player.getName() + " picked up DiscardPile.");
+                    player = nextPlayer(player);
+                    System.out.println(player.getName() + " is CurrentPlayer");
+                    cardsToPlay = player.playNext2(this);
+                    next = cardsToPlay.last();
+                    fourOfAKindInPlayNext2(next, cardsToPlay);
+                    
+                    /**In case where playNext2 delivers tenBomb
+                     * can still have a problem if playerIsDone, but impossible
+                     * if playing hand cards*/
+                    tenBombIn3Mirror(player, next, tgtMatch);
+    
+                    setPrevCard(next);
+                    setPlayer(player);
+                    displayState();
+                    return player;   
                 }
-            }
-            
-            if(threeMirror(next)) {
-                next.equals(tgtMatch);
+    
+                if(cardsPlayableRankSH(tgtMatch, next))
+                {                             
+                    System.out.println("Player " + player.getName() +
+                            " plays "+ numCardsPlayed +" x "+ 
+                            next + " card(s)");
+                    discardPile.addCards(cardsToPlay);
+                    while(fourOfaKindBomb(discardPile)) {
+                    fourOfAKindHandler(cardsToPlay, next);
+                    }
+                    
+                    tenBombIn3Mirror(player, next, tgtMatch);
+    
+                    setPrevCard(discardPile.last());
+                    setPlayer(player);
+                    displayState();
+                    return player; 
+                }// End if(cardsPlayableRankSH(tgtMatch, next)
+            }// End for loop 2
+        }// End if(!player.River.empty)
+    
+        /****** Playing Hole cards in ThreeMirror *******/
+        if(player.getHand().empty() && player.getRiver().empty())
+        {
+            CardHand cardToPlay = player.pickRandomHoleCard2(tgtMatch);
+            Card next;
+            if(cardToPlay != null) {
+            next = cardToPlay.last();
+            } else {next = null;}
+    
+            if(next != null)
+            {                             
+                System.out.println("Player " + player.getName() +
+                        " plays Hole card (fm 3Mirror) " + next);
+                discardPile.addCard(next);
+                while(fourOfaKindBomb(discardPile)) {
+                    fourOfAKindHandler(cardToPlay, next);
+                    }
+                
+                while(tenBomb(next))
+                {
+                    System.out.println("Player "+player.getName()+
+                            " Bombed the discardPile from the Hole");
+                    discardPile.dealAll(bomb);
+                    if(!PlayerSH.playerIsDone(player)) {
+                       cardToPlay = player.playNext2(this);
+                        next = cardToPlay.last();
+                    }else 
+                     {player = nextPlayer(player);
+                    System.out.println(player.getName() + " is CurrentPlayer");
+                    CardHand cardsToPlay = player.playNext2(this);
+                    next = cardsToPlay.last();
+                    fourOfAKindInPlayNext2(next, cardsToPlay);
+                    }
+                }
+                
+                if(threeMirror(next)) {
+                    next.equals(tgtMatch);
+                }
+    
+                setPrevCard(next);
+                setPlayer(player);
+                displayState();
+                return player;
+            }//End if(next != null)
+            else 
+            {
+                discardPile.dealAll(player.getHand());
+                System.out.println(player.getName() + " picked up DiscardPile.");
+                player = nextPlayer(player);
+                System.out.println(player.getName() + " is CurrentPlayer");
+                CardHand cardsToPlay = player.playNext2(this);
+                next = cardsToPlay.last();
+                fourOfAKindInPlayNext2(next, cardsToPlay);
+    
+    
+                setPrevCard(next);
+                setPlayer(player);
+                displayState();
+                return player;   
+            }//End if(next==null)
+        }//End Hand.empty() && River.empty()
+       return player;  
+    }//End method threeMirrorPlay(PlayerSH player, Card tgtMatch)
+
+    /**In case where playNext2 delivers tenBomb
+     * can still have a problem if playerIsDone, but impossible
+     * if playing hand cards unless nextPlayer doesn't have
+     * Hand or River cards.
+     * 
+     * Prints Player Bombed DiscardPile.
+     * 
+     * @param player
+     * @param next
+     * @param tgtMatch 
+     */
+    public void tenBombIn3Mirror(PlayerSH player, Card next, Card tgtMatch) {
+        CardHand cardsToPlay;
+        while(tenBomb(next))
+        {
+            System.out.println("Player "+player.getName()+
+                    " Bombed the discardPile from the threeMirror method ");
+            discardPile.dealAll(bomb);
+            if(!PlayerSH.playerIsDone(player)) {
+               cardsToPlay = player.playNext2(this);
+                next = cardsToPlay.last();
+            }else 
+             {player = nextPlayer(player);
+            System.out.println(player.getName() + " is CurrentPlayer");
+            cardsToPlay = player.playNext2(this);
+            next = cardsToPlay.last();
             }
         }
         
+        if(threeMirror(next)) {
+            next.equals(tgtMatch);
+        }
+    }
+    
     /**OptimizeRiver()
      * For each Player:
      * Looks at river Cards:
