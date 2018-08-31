@@ -275,7 +275,7 @@ public class ShitHead {
             displayState();
         }
 
-            System.out.println("Player into TakeTurn() = " 
+            System.out.println("Player into TakeTurn()2 top = " 
                     + player.getName());
 
         if(!discardPile.empty()) {
@@ -288,27 +288,26 @@ public class ShitHead {
          */
         if(specialCardNt7SH(prev)) {
 
-            if (threeMirror(prev) && discardPile.size() >= 2) 
-            {
-                Card tgtMatch = 
-                      discardPile.getCard(Math.max((discardPile.size()-numThreeMirrors(discardPile)-1),0));
-                threeMirrorPlay(player, tgtMatch);
-                
-                if(!isDone()) {
-                player=nextPlayer(player);
-                System.out.println("Player out 3Mirror " + player.getName() +
-                        " is next player: ");
-                }
+           if (threeMirror(prev) && discardPile.size() >= 2) 
+           {
+            Card tgtMatch = 
+                  discardPile.getCard(
+                   Math.max((discardPile.size()-numThreeMirrors(discardPile)-1),0));
+            threeMirrorPlay(player, tgtMatch);
+            
+            if(!isDone()) {
+            player=nextPlayer(player);
+            System.out.println("Player out 3Mirror " + player.getName() +
+                    " is next player: ");
             }
+           }
 
         }//End actions for previous card = Special
 
         CardHand cardsToPlay = player.play2(this, prev);
         Card next;
-        if(cardsToPlay != null) {
-        next = cardsToPlay.last();
-        } else 
-        {next = null;}
+        
+        next = cardsToPlayNullCheck(cardsToPlay);
             
         if(next==(null) && !isDone()) {
             System.out.println(player.getName() + " picked up DiscardPile.");
@@ -318,16 +317,12 @@ public class ShitHead {
             
             CardHand playNext = player.playNext2(this);
             next = playNext.last();
+            
+            fourOfAKindInPlayNext2(next, playNext);
             displayState();
             
-            while(tenBomb(next) && !PlayerSH.playerIsDone(player)) {
-                discardPile.dealAll(bomb);
-                playNext = player.playNext2(this);
-                next = playNext.last();
-                displayState();
-                }
-            
-            player = nextPlayer(player);
+            next = tenBombInPlayNext2(next);// End while(tenBomb(next) && !isDone())  
+            player = nextPlayer(player);            
         }else 
             if(!tenBomb(next))
             {
@@ -394,6 +389,61 @@ public class ShitHead {
         }//End special card next
     } //End takeTurn2(PlayerSH)
 
+/**Wherever CardHand cardsToPlay is returned from play2() or searchForMatch2
+ * checks/handles case where cardsToPlay is Null and 
+ * therefor Card next is set to null. 
+ * Else sets next to cardsToPlay.last().
+ * @param cardsToPlay
+ * @return Card next = null or cardsToPlay last().
+ */
+public Card cardsToPlayNullCheck(CardHand cardsToPlay) {
+    Card next;
+    if(cardsToPlay != null) {
+    next = cardsToPlay.last();
+    } else 
+    {next = null;}
+    return next;
+}
+
+    /**Treats tenBombs that resulting from playNext2 method.
+     * Prints what player played and displays state;
+     * @param next = card to be played after tenBomb in playNext2
+     * @return
+     */
+    public Card tenBombInPlayNext2(Card next) {
+        CardHand playNext;
+        while(tenBomb(next) && !isDone()) 
+        {
+            if(!PlayerSH.playerIsDone(player)) {
+                discardPile.dealAll(bomb);
+                System.out.println(player.getName() + " tenBombed in PlayNext2()!");
+                playNext = player.playNext2(this);
+                next = playNext.last();
+                
+                fourOfAKindInPlayNext2(next, playNext);
+                
+                System.out.println(player.getName() + " plays " + playNext.size() + " x " +  next + " card(s).");
+                System.out.println("");
+                displayState();
+            } else //End if(!PlayerSH.playerIsDone(player))
+              {
+                discardPile.dealAll(bomb);
+                System.out.println("Player " + player.getName() + " tenBombed in playNext2() and is Done!");
+                player = nextPlayer(player);
+                System.out.println("Player " + player.getName() + " is current player after tenBomb in playNext2().");
+                playNext = player.playNext2(this);
+                next = playNext.last();
+                
+                fourOfAKindInPlayNext2(next, playNext);
+                
+                System.out.println(player.getName() + " plays " + playNext.size() + " x " +  next + " card(s).");
+                System.out.println("");
+                displayState();
+              }
+        }// End while(tenBomb(next) && !isDone())
+        return next;
+    }// End tenBombInPlayNext2
+
     /** handles FoAK Bomb including FoAK in PlayNext2.
      * resets fourOfAKind boolean to false.
      * @param cardsToPlay
@@ -422,6 +472,9 @@ public class ShitHead {
                 displayState();
                 
                fourOfAKindInPlayNext2(next, playNext);
+               setFourOfaKind(false);
+               player = nextPlayer(player);
+               setPlayer(player);
                } else //player isDone
                {
                 System.out.println(player.getName() + " is Done After FoAK Bomb from the Hole!");
@@ -433,6 +486,9 @@ public class ShitHead {
                displayState();
                
                fourOfAKindInPlayNext2(next, playNext);
+               setFourOfaKind(false);
+               player = nextPlayer(player);
+               setPlayer(player);
                }// else because previous player is done
                
              }//End While(isFourOfAKind)
@@ -441,32 +497,46 @@ public class ShitHead {
         return next;
     }
 
-    /**
+    /**Does not return anything.
      * @param next
      * @param playNext
      */
     public void fourOfAKindInPlayNext2(Card next, CardHand playNext) {
-        if(!fourOfaKindBomb(playNext)) {
-               setFourOfaKind(false);    
-               player = nextPlayer(player);
-                 } else 
-                    {//for when player.playNext2 leads to 2nd FoaK Bomb
-                    if(!PlayerSH.playerIsDone(player)) 
-                    {
-                     return;
-                    }  else {System.out.println(player.getName() + " Four-of-a-Kind Bombed DiscardPile Again with " + next +"'s! "
+        while(fourOfaKindBomb(playNext)) 
+         {
+          setFourOfaKind(true);    
+                 
+              if(!PlayerSH.playerIsDone(player)) 
+               {
+                System.out.println(player.getName() + " Four-of-a-Kind Bombed DiscardPile with " + next +"'s! ");
+                discardPile.addCards(playNext);
+                displayState();
+                discardPile.dealAll(bomb);
+                
+                playNext = player.playNext2(this);
+                next =playNext.last();
+                setPrevCard(next);
+                    if(!fourOfaKindBomb(playNext)) {
+                        setFourOfaKind(false);
+//                        displayState();
+                    }
+               }else 
+                {System.out.println(player.getName() + " Four-of-a-Kind Bombed DiscardPile Again with " + next +"'s! "
                              + "\n And is Done!!");
-                     discardPile.addCards(playNext);
-                     displayState();
-                     discardPile.dealAll(bomb);
-                     
-                     player = nextPlayer(player);
-                     playNext = player.playNext2(this);
-                     setPrevCard(playNext.last());
-                     displayState();
-                    }// End if(!PlayerSH.playerIsDone(player))
-               }//End if(!fourOfaKindBomb(playNext))
-    }
+                 discardPile.addCards(playNext);
+                 displayState();
+                 discardPile.dealAll(bomb);
+                 
+                 player = nextPlayer(player);
+                 playNext = player.playNext2(this);
+                 setPrevCard(playNext.last());
+                     if(!fourOfaKindBomb(playNext)) {
+                         setFourOfaKind(false);
+//                         displayState();
+                     }
+                }// End if(!PlayerSH.playerIsDone(player))
+         }//End while(fourOfaKindBomb(playNext))
+    }// End fourOfAKindInPlayNext2(Card next, CardHand playNext)
         
     /**Fixed tenBomb code, refactored into a
      *   method tenBombInThreeMirror.
@@ -494,10 +564,7 @@ public class ShitHead {
                 
         /**code below fixes issue of trying to popCard() 
          *   from CardHand that is null****/        
-                if(cardsToPlay != null) {
-                next = cardsToPlay.last();
-                numCardsPlayed = cardsToPlay.size();
-                } else next = null;
+                next = cardsToPlayNullCheck(cardsToPlay);
 
                 if((next !=null) && threeMirror(next)) 
                 {
@@ -523,7 +590,7 @@ public class ShitHead {
 
                 if(next==null) {
                     discardPile.dealAll(player.getHand());
-                    System.out.println(player.getName() + " picked up DiscardPile.");
+                    System.out.println(player.getName() + " picked up DiscardPile in 3M.");
                     player = nextPlayer(player);
                     System.out.println(player.getName() + " is CurrentPlayer");
                     cardsToPlay = player.playNext2(this);
@@ -533,7 +600,7 @@ public class ShitHead {
                     /**In case where playNext2 delivers tenBomb
                      * can still have a problem if playerIsDone, but impossible
                      * if playing hand cards*/
-                    tenBombIn3Mirror(player, next, tgtMatch);
+                    tenBombIn3Mirror(player, next);
 
                     setPrevCard(next);
                     setPlayer(player);
@@ -545,13 +612,14 @@ public class ShitHead {
                             " plays " + numCardsPlayed + " x " 
                             + next + " card(s)");
                     discardPile.addCards(cardsToPlay);
+                    
                     while(fourOfaKindBomb(discardPile)) {
                         fourOfAKindHandler(cardsToPlay, next);
                         }
                     displayState();
                     draw();
                     
-                    tenBombIn3Mirror(player, next, tgtMatch);
+                    tenBombIn3Mirror(player, next);
 
                     setPrevCard(next);
                     setPlayer(player);
@@ -573,14 +641,11 @@ public class ShitHead {
         /**code below fixes issue of trying to popCard() 
          *   from CardHand that is null*
          *   ***/        
-                if(cardsToPlay != null) {
-                next = cardsToPlay.last();
-                numCardsPlayed = cardsToPlay.size();
-                } else {next = null;
-                numCardsPlayed = 0;}
+                next=cardsToPlayNullCheck(cardsToPlay);
     
                 if((next != null) && threeMirror(next)) 
                 {
+                    numCardsPlayed = cardsToPlay.size();
                     System.out.println("Player " + player.getName() +
                             " plays from RLp2 " + numCardsPlayed + 
                             " x " + next + " card(s).");
@@ -593,7 +658,7 @@ public class ShitHead {
                         player = nextPlayer(player);
                         setPlayer(player);
                         System.out.println("Player " + player.getName() +
-                                " is next player out 3Match after LP1: ");
+                                " is next player out 3Match after RLP2: ");
                         displayState();
                         
                      continue;
@@ -603,9 +668,10 @@ public class ShitHead {
     
                 if(next==null) {
                     discardPile.dealAll(player.getHand());
-                    System.out.println(player.getName() + " picked up DiscardPile.");
+                    System.out.println(player.getName() + " picked up DiscardPile in 3M.");
+                    
                     player = nextPlayer(player);
-                    System.out.println(player.getName() + " is CurrentPlayer");
+                    System.out.println(player.getName() + " is CurrentPlayer in RLP2");
                     cardsToPlay = player.playNext2(this);
                     next = cardsToPlay.last();
                     fourOfAKindInPlayNext2(next, cardsToPlay);
@@ -613,48 +679,53 @@ public class ShitHead {
                     /**In case where playNext2 delivers tenBomb
                      * can still have a problem if playerIsDone, but impossible
                      * if playing hand cards*/
-                    tenBombIn3Mirror(player, next, tgtMatch);
+                    tenBombIn3Mirror(player, next);
     
                     setPrevCard(next);
                     setPlayer(player);
                     displayState();
                     return player;   
-                }
+                }// End if(next==null)
     
                 if(cardsPlayableRankSH(tgtMatch, next))
-                {                             
+                {
+                    numCardsPlayed = cardsToPlay.size();
                     System.out.println("Player " + player.getName() +
                             " plays "+ numCardsPlayed +" x "+ 
-                            next + " card(s)");
+                            next + " card(s) fm RLP2");
                     discardPile.addCards(cardsToPlay);
+                    
                     while(fourOfaKindBomb(discardPile)) {
                     fourOfAKindHandler(cardsToPlay, next);
                     }
                     
-                    tenBombIn3Mirror(player, next, tgtMatch);
+                    tenBombIn3Mirror(player, next);
     
                     setPrevCard(discardPile.last());
                     setPlayer(player);
                     displayState();
                     return player; 
                 }// End if(cardsPlayableRankSH(tgtMatch, next)
-            }// End for loop 2
+            }// End while(threeMsMatchChK) loop 2
         }// End if(!player.River.empty)
     
         /****** Playing Hole cards in ThreeMirror *******/
         if(player.getHand().empty() && player.getRiver().empty())
         {
+          while(threeMsMatchChK)
+          {
+            
             CardHand cardToPlay = player.pickRandomHoleCard2(tgtMatch);
             Card next;
-            if(cardToPlay != null) {
-            next = cardToPlay.last();
-            } else {next = null;}
+            
+            next = cardsToPlayNullCheck(cardToPlay);
     
             if(next != null)
             {                             
                 System.out.println("Player " + player.getName() +
                         " plays Hole card (fm 3Mirror) " + next);
                 discardPile.addCard(next);
+                
                 while(fourOfaKindBomb(discardPile)) {
                     fourOfAKindHandler(cardToPlay, next);
                     }
@@ -666,19 +737,36 @@ public class ShitHead {
                     discardPile.dealAll(bomb);
                     if(!PlayerSH.playerIsDone(player)) {
                        cardToPlay = player.playNext2(this);
-                        next = cardToPlay.last();
+                       next = cardToPlay.last();
                     }else 
-                     {player = nextPlayer(player);
-                    System.out.println(player.getName() + " is CurrentPlayer");
-                    CardHand cardsToPlay = player.playNext2(this);
-                    next = cardsToPlay.last();
-                    fourOfAKindInPlayNext2(next, cardsToPlay);
-                    }
-                }
+                     {
+                      player = nextPlayer(player);
+                      System.out.println(player.getName() + " is CurrentPlayer");
+                      CardHand cardsToPlay = player.playNext2(this);
+                      next = cardsToPlay.last();
+                      fourOfAKindInPlayNext2(next, cardsToPlay);
+                     }
+                }// End while(tenBomb(next))
                 
-                if(threeMirror(next)) {
-                    next.equals(tgtMatch);
-                }
+                if(threeMirror(next)) 
+                {
+                    System.out.println("Player " + player.getName() +
+                            " plays another 3Mirror"+ next + "fm Hole.");
+                    discardPile.addCards(cardToPlay);
+                    draw();
+                    
+                 if(!fourOfaKindBomb(discardPile)) {
+                    threeMsMatchChK=true;
+                    
+                    player = nextPlayer(player);
+                    setPlayer(player);
+                    System.out.println("Player " + player.getName() +
+                            " is next player out 3Mirror fm Hole: ");
+                    displayState();
+                    
+                 continue;
+                 } else next = fourOfAKindHandler(cardToPlay, next);
+                }//End if(threeMirror(next)) in Hole
     
                 setPrevCard(next);
                 setPlayer(player);
@@ -688,12 +776,14 @@ public class ShitHead {
             else 
             {
                 discardPile.dealAll(player.getHand());
-                System.out.println(player.getName() + " picked up DiscardPile.");
+                System.out.println(player.getName() + " picked up DiscardPile fm hole 3M.");
+                
                 player = nextPlayer(player);
                 System.out.println(player.getName() + " is CurrentPlayer");
                 CardHand cardsToPlay = player.playNext2(this);
                 next = cardsToPlay.last();
                 fourOfAKindInPlayNext2(next, cardsToPlay);
+                tenBombIn3Mirror(player, next);
     
     
                 setPrevCard(next);
@@ -701,22 +791,23 @@ public class ShitHead {
                 displayState();
                 return player;   
             }//End if(next==null)
+          }// End while(threeMsMatchChK) in Hole
         }//End Hand.empty() && River.empty()
        return player;  
     }//End method threeMirrorPlay(PlayerSH player, Card tgtMatch)
 
-    /**In case where playNext2 delivers tenBomb
+    /**
+     * In case where playNext2 delivers tenBomb
      * can still have a problem if playerIsDone, but impossible
-     * if playing hand cards unless nextPlayer doesn't have
+     * if playing hand cards unless NEXTPLAYER doesn't have
      * Hand or River cards.
      * 
      * Prints Player Bombed DiscardPile.
      * 
      * @param player
      * @param next
-     * @param tgtMatch 
      */
-    public void tenBombIn3Mirror(PlayerSH player, Card next, Card tgtMatch) {
+    public void tenBombIn3Mirror(PlayerSH player, Card next) {
         CardHand cardsToPlay;
         while(tenBomb(next))
         {
@@ -725,19 +816,24 @@ public class ShitHead {
             discardPile.dealAll(bomb);
             if(!PlayerSH.playerIsDone(player)) {
                cardsToPlay = player.playNext2(this);
-                next = cardsToPlay.last();
+               next = cardsToPlay.last();
             }else 
-             {player = nextPlayer(player);
-            System.out.println(player.getName() + " is CurrentPlayer");
-            cardsToPlay = player.playNext2(this);
-            next = cardsToPlay.last();
+             {
+             System.out.println("Player "+player.getName()+
+                     " Bombed the discardPile from the threeMirror method and"
+                     + " is Done! ");
+             
+             if(!isDone()) 
+             {
+             player = nextPlayer(player);
+             System.out.println(player.getName() + " is CurrentPlayer");
+             cardsToPlay = player.playNext2(this);
+             next = cardsToPlay.last();
+             }
             }
-        }
+        }// End While(tenBomb(next))
         
-        if(threeMirror(next)) {
-            next.equals(tgtMatch);
-        }
-    }
+    }// End tenBombIn3Mirror.
     
     /**OptimizeRiver()
      * For each Player:

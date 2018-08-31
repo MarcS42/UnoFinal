@@ -147,8 +147,15 @@ public class PlayerSH {
     }//End pickRandomHoleCard2
 
     /**Plays next card when discardPile.empty().
-     * 
-     * playNext2 never returns 'null'.
+     * Cases when playNext2 is needed:
+     * 1) player-1 picked up discardPile;
+     * 2) player tenBombed discardPile and, if !done, plays again;
+     *  2a) if player isDone, player+1 playsNext2
+     * 3) player FoAK bombs discardPile and, if !done, plays again;
+     *  3a) if player isDone, player+1 playsNext2
+     *  
+     * playNext2 never returns 'null' because there is no previous card that needs
+     *  to be rankMatched.
      * 
      * Adds card(s) to discardPile.
      * Added handler for playNext call when player isDone
@@ -196,16 +203,16 @@ public class PlayerSH {
             shitHead.draw();
             return playNext;
     
-        }// End PlayeNext2.!Hand.empty().
+        }// End PlayNext2.!Hand.empty().
     
         if(!river.empty()) {
             /*    Looking for not special RCards */
             for(int i = 0; i < river.size(); i++) {
-                    Card chkCard = getRCards().get(i);
-                    
-                    if(!specialCardNt7SH(chkCard)) {
-                        cardsPlayable.add(chkCard);
-                    }
+                Card chkCard = getRCards().get(i);
+                
+                if(!specialCardNt7SH(chkCard)) {
+                    cardsPlayable.add(chkCard);
+                }
             }//End build River cardsPlayable PlayNext
             
             if(!cardsPlayable.isEmpty()) {
@@ -248,12 +255,13 @@ public class PlayerSH {
             shitHead.draw();
             CardHand playNext = new CardHand("playNext", cardsToPlayNext);
             return playNext;
-        } else {
-            shitHead.setPlayer(shitHead.nextPlayer(shitHead.player));
         }
+        else 
+            shitHead.setPlayer(shitHead.nextPlayer(shitHead.player));
+        
         System.out.println("Player into playNext = " 
                 + shitHead.player.getName());
-        return shitHead.player.playNext2(shitHead);//needed if last card tenBomb && playerDone
+        return shitHead.player.playNext2(shitHead);//not sure ever needed
     }//End playNext2(SH)**********************************
 
     /**
@@ -352,11 +360,17 @@ public class PlayerSH {
     }//End ArrayList<Card> playSpecialCards2(CardHand hand, Card prev)
 
     /**Pops Cards from hand that is parameter.
+     * 
+     * This is one of the places where you can add/change player strategy.
+     * 
      * @param hand
      * @param cardsToBePlayed = AL sdtq of AL's of cards singles,doubles,triples,etc 
-     * @param cardsToPlay
+     * @param AL cardsToPlay is passed as an empty AL, but is filled and returned
+     *  by this method.
+     *  
      * @return AL of cardsToPlay using logic of playing FoaK,
      * then triples, doubles, and lastly singles.
+     * 
      * Idea being to off-load highest number of cards possible.
      */
     public ArrayList<Card> cardsToPlay(CardHand hand, ArrayList<ArrayList<Card>> cardsToBePlayed,
@@ -659,10 +673,18 @@ public class PlayerSH {
         return getRiver().getCards();
     }
     
+    /**Used in playerHas3MHoleCards, which is not used in current game code,
+     * but I keep for future reference.
+     * @return
+     */
     public CardHand getHole() {
         return hole;
     }
     
+    /**Used in playerHas3MHoleCards, which is not used in current game code,
+     * but I keep for future reference.
+     * @return
+     */
     public ArrayList<Card> getHoleCards() {
         return getHole().getCards();
     }
