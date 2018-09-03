@@ -277,14 +277,7 @@ public class PlayerSH {
         ArrayList<ArrayList<Card>> cardsToBePlayed;
         ArrayList<Card> cardsToPlayLNS = new ArrayList<>();
         
-        for (int i = 0; i < hand.size(); i++) {
-            Card card = hand.getCard(i);
-                
-            if (!specialCardNt7SH(card) && card.getRankAceHi() 
-                    <= 11 && cardsPlayableRankSH(prev, card)) { 
-                playableLNS.add(card);
-            }
-        }
+        buildCardsPlayableLNS(hand, prev, playableLNS);
             
         if(!playableLNS.isEmpty()) {
             
@@ -295,6 +288,22 @@ public class PlayerSH {
         
      return playableLNS;
     }//End ArrayList<Card> lowNtSpecial2(CardHand hand, Card prev)
+
+    /**
+     * @param hand CardHand Hand, River.
+     * @param prev Card you are trying to matchRank
+     * @param playableLNS Empty AL of Low Not Special Cards that is filled by this method
+     */
+    public void buildCardsPlayableLNS(CardHand hand, Card prev, ArrayList<Card> playableLNS) {
+        for (int i = 0; i < hand.size(); i++) {
+            Card card = hand.getCard(i);
+                
+            if (!specialCardNt7SH(card) && card.getRankAceHi() 
+                    <= 11 && cardsPlayableRankSH(prev, card)) { 
+                playableLNS.add(card);
+            }
+        }
+    }
 
     /**
      * @param hand
@@ -308,14 +317,7 @@ public class PlayerSH {
         ArrayList<ArrayList<Card>> cardsToBePlayed;
         ArrayList<Card> cardsToPlayHNS = new ArrayList<>();
         
-        for (int i = hand.size()-1; i >=0 ; i--) {
-            Card card = hand.getCard(i);
-    
-           if(!specialCardSH(card) && card.getRankAceHi() 
-                    > 11 && cardsPlayableRankSH(prev, card)) {
-                playableHNS.add(card);
-           }
-        }//End build cardsPlayable
+        buildCardsPlayableHNS(hand, prev, playableHNS);
         
         if(!playableHNS.isEmpty()) {
             
@@ -330,6 +332,22 @@ public class PlayerSH {
     /**
      * @param hand
      * @param prev
+     * @param playableHNS
+     */
+    public void buildCardsPlayableHNS(CardHand hand, Card prev, ArrayList<Card> playableHNS) {
+        for (int i = hand.size()-1; i >=0 ; i--) {
+            Card card = hand.getCard(i);
+    
+           if(!specialCardSH(card) && card.getRankAceHi() 
+                    > 11 && cardsPlayableRankSH(prev, card)) {
+                playableHNS.add(card);
+           }
+        }//End build cardsPlayable
+    }
+
+    /**
+     * @param hand = Hand Cards, River Cards
+     * @param prev
      * @return AL of cards to play that are cardsToPlaySpc.
      * 
      * Calls cardsPlayableAnalyzer() which pops cards from hand, 
@@ -340,14 +358,7 @@ public class PlayerSH {
         ArrayList<ArrayList<Card>> cardsToBePlayed;
         ArrayList<Card> cardsToPlaySpc = new ArrayList<>();
         
-        for (int i = 0; i < hand.size(); i++) { 
-            Card card = hand.getCard(i);
-                    
-            if (specialCardSH(card) 
-                    && cardsPlayableRankSH(prev, card)) {
-                playableSpc.add(card);
-            }
-        }//End build cards playableSpc
+        buildCardsPlayableSpc(hand, prev, playableSpc);
         
         if(!playableSpc.isEmpty()) {
             
@@ -359,13 +370,30 @@ public class PlayerSH {
       return playableSpc;
     }//End ArrayList<Card> playSpecialCards2(CardHand hand, Card prev)
 
+    /**
+     * @param hand Hand, River CardHands
+     * @param prev
+     * @param playableSpc empty AL of playable special Cards that is
+     * filled by this method.
+     */
+    public void buildCardsPlayableSpc(CardHand hand, Card prev, ArrayList<Card> playableSpc) {
+        for (int i = 0; i < hand.size(); i++) { 
+            Card card = hand.getCard(i);
+                    
+            if (specialCardSH(card) 
+                    && cardsPlayableRankSH(prev, card)) {
+                playableSpc.add(card);
+            }
+        }//End build cards playableSpc
+    }
+
     /**Pops Cards from hand that is parameter.
      * 
      * This is one of the places where you can add/change player strategy.
      * 
      * @param hand
      * @param cardsToBePlayed = AL sdtq of AL's of cards singles,doubles,triples,etc 
-     * @param AL cardsToPlay is passed as an empty AL, but is filled and returned
+     * @param AL cardsToPlayNext is passed as an empty AL, but is filled and returned
      *  by this method.
      *  
      * @return AL of cardsToPlay using logic of playing FoaK,
@@ -374,7 +402,7 @@ public class PlayerSH {
      * Idea being to off-load highest number of cards possible.
      */
     public ArrayList<Card> cardsToPlay(CardHand hand, ArrayList<ArrayList<Card>> cardsToBePlayed,
-            ArrayList<Card> cardsToPlay) {
+            ArrayList<Card> cardsToPlayNext) {
         int szeFoaK;
         int szeTriples;
         int szeDoubles;
@@ -386,52 +414,52 @@ public class PlayerSH {
                */
               for(int i2 = szeFoaK-1; i2 > szeFoaK-1-4; i2--)
               {
-              cardsToPlay.add(cardsToBePlayed.get(3).get(i2));
+              cardsToPlayNext.add(cardsToBePlayed.get(3).get(i2));
               }
          //****************Remove cardsToPlay from hand********************/
-              for(Card c:cardsToPlay) {
+              for(Card c:cardsToPlayNext) {
                   hand.popCard(c); //Remove cardsToPlay from hand
               }
-              return cardsToPlay;
+              return cardsToPlayNext;
           } else
           if(!cardsToBePlayed.get(2).isEmpty()) {
               szeTriples = cardsToBePlayed.get(2).size();
               for(int i2 = szeTriples-1; i2 > szeTriples-1-3; i2--)
               {
-              cardsToPlay.add(cardsToBePlayed.get(2).get(i2));
+              cardsToPlayNext.add(cardsToBePlayed.get(2).get(i2));
               }
          //****************Remove cardsToPlay from hand********************/       
-              for(Card c:cardsToPlay) {
+              for(Card c:cardsToPlayNext) {
                   hand.popCard(c); //Remove cardsToPlay from hand
               }
-              return cardsToPlay;
+              return cardsToPlayNext;
           } else
           if(!cardsToBePlayed.get(1).isEmpty()) {
               szeDoubles = cardsToBePlayed.get(1).size();
               for(int i2 = szeDoubles-1; i2 > szeDoubles-1-2; i2--)
               {
-              cardsToPlay.add(cardsToBePlayed.get(1).get(i2));
+              cardsToPlayNext.add(cardsToBePlayed.get(1).get(i2));
               }
          //****************Remove cardsToPlay from hand********************/     
-              for(Card c:cardsToPlay) {
+              for(Card c:cardsToPlayNext) {
                   hand.popCard(c); //Remove cardsToPlay from hand
               }
-              return cardsToPlay;
+              return cardsToPlayNext;
           } else
           if(!cardsToBePlayed.get(0).isEmpty()) {
               szeSingles = cardsToBePlayed.get(0).size();
               for(int i2 = szeSingles-1; i2 > szeSingles-1-1; i2--)
               {
-              cardsToPlay.add(cardsToBePlayed.get(0).get(i2));
+              cardsToPlayNext.add(cardsToBePlayed.get(0).get(i2));
               }
         //****************Remove cardsToPlay from hand********************/    
-             for(Card c:cardsToPlay) {
+             for(Card c:cardsToPlayNext) {
                  hand.popCard(c); //Remove cardsToPlay from hand
              }
-             return cardsToPlay;
+             return cardsToPlayNext;
           }
         //*****if sdtq is empty returns empty cardsToPlay*****/
-        return cardsToPlay;
+        return cardsToPlayNext;
     }//End ArrayList<Card> cardsToPlay(CardHand hand, ArrayList<ArrayList<Card>> cardsToBePlayed,
 
     /**Pops cards from hand parameter input.

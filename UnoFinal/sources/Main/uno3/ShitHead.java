@@ -113,6 +113,7 @@ public class ShitHead {
     }// End Constructor SH
 
     /**Sets SpecialCardsSH threeMirror variables.
+     * Called in CardDeck constructor.
      * Enables use of contains(Card threeMirror) in SpecialCardsSH handling.
      * @param deck
      */
@@ -181,7 +182,7 @@ public class ShitHead {
      * Is player out of cards?
      * Yes => remove from players AL
      * Print "player done"
-     * @return isGameOver?
+     * @return isGameOver? If players.size()<=1.
      */
     public boolean isDone() {
         this.handCount++;
@@ -206,7 +207,7 @@ public class ShitHead {
     }// End isDone()?
     
     /**In SH only draw if 
-     * 1) you played a card; 
+     * 1) you played a card; and, 
      * 2) have < #handSize cards in your hand; and
      * 3) drawPile is not empty
      *  
@@ -246,17 +247,21 @@ public class ShitHead {
     /**takeTurn2 is the multiple playable cards version of ShitHead
      *ShitHead- Basic functioning of game is (see takeTurn2()) below. 
      * a) First Pass actions:
-     *       1) optimizeRiver() Cards with Hand cards;
-     *       2) FirstPlayer playFirstCard()'s !Special, draw new card;
+     *       1) OptimizeRiver() Cards with Hand cards;
+     *       2) Determine FirstPlayer
+     *         2b) FirstPlayer playFirstCard()'s !Special, draw new card;
      *       3) Advance nextPlayer(Player);
      *       4) displayState().
      * b) Start with previous card == discardPile.last;
-     * c) try to match it with what you have; 
-     *   c1) if previous is 3Mirror, exit standard 
+     * c) Try to match it with CardHand returned from searchForMatch of what you have; 
+     *   c1) Card next = CardHand cardsToPlay.last()
+     * d) If next equals FoAK bomb, handle it
+     * e) If next = tenBomb, handle it
+     * f) if previous is 3Mirror, exit standard 
      *   play waterfall to handle this card where 
      *   multiple cards played in sequence changes regular 
      *   waterfall;
-     * d) Eventually, if no Match, pickup discardPile;
+     * g) Eventually, if no Match, pickup discardPile;
      * e) Next card played becomes previous card to following
      *   player.
      */ 
@@ -850,9 +855,10 @@ public Card cardsToPlayNullCheck(CardHand cardsToPlay) {
      *  6) Next Player.
      */
     public void optimizeRiver() {
-        //   Fixed riverCards sometimes not being replaced with better handCards by running twice.
-        //   Problem is that when removeAll and addAll is done on riverCards, card order
-        //     changes such that low river card can be skipped. 
+        /**   Fixed riverCards sometimes not being replaced with better handCards by running twice.
+        *   Problem is that when removeAll and addAll is done on riverCards, card order
+        *   changes such that low river card can be skipped.
+        */      
         
         for(int j = 0; j < 2; j++) {//Run optimize twice to overcome addAll/removAll discussed above
             for(PlayerSH p:players) {
