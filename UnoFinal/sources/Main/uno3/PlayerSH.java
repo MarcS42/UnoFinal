@@ -166,94 +166,35 @@ public class PlayerSH {
     public CardHand playNext2(ShitHead shitHead) {
         ArrayList<Card> cardsToPlayNext = new ArrayList<>();
         ArrayList<Card> cardsPlayable = new ArrayList<>();
-        ArrayList<ArrayList<Card>> cardsToBePlayed;
+        ArrayList<ArrayList<Card>> cardsToBePlayed = new ArrayList<>();
     
         if(!hand.empty()) {
-            /*    Looking for not special HandCards */
-            for(int i = 0; i < hand.size(); i++) {
-                Card chkCard = hand.getCard(i);
-                
-                if(!specialCardNt7SH(chkCard)) {
-                    cardsPlayable.add(chkCard);
-                }
-            }//End build Hand cardsPlayablePlayNext
-            
-            if(!cardsPlayable.isEmpty()) {
-                cardsToBePlayed = cardsPlayableAnalyzer(cardsPlayable);
-                cardsToPlayNext = cardsToPlay(hand,cardsToBePlayed,cardsToPlayNext);    
-                
-            } else //End if(!cardsPlayable.isEmpty())     
-            
-            /*     if Player only has special Hcards    */
-            if((cardsPlayable.isEmpty()) && !hand.empty()) 
-            {
-                cardsPlayable = hand.getCards();
-                cardsToBePlayed = cardsPlayableAnalyzer(cardsPlayable);
-                cardsToPlayNext = cardsToPlay(hand,cardsToBePlayed,cardsToPlayNext);
-                
-            }
-            
-            CardHand playNext = new CardHand("playNext", cardsToPlayNext);        
-            for(Card c:cardsToPlayNext) {
-            shitHead.discardPile.addCard(c);
-            }
-            System.out.println("Player "+ name +
-                            " plays "+ playNext.size() + " x " + 
-                        shitHead.discardPile.last() + " card(s).");
-            shitHead.draw();
+            CardHand playNext = playNext2CardHandBuidler(hand,shitHead, 
+                    cardsToPlayNext, cardsPlayable,cardsToBePlayed);
             return playNext;
     
         }// End PlayNext2.!Hand.empty().
     
         if(!river.empty()) {
-            /*    Looking for not special RCards */
-            for(int i = 0; i < river.size(); i++) {
-                Card chkCard = getRCards().get(i);
-                
-                if(!specialCardNt7SH(chkCard)) {
-                    cardsPlayable.add(chkCard);
-                }
-            }//End build River cardsPlayable PlayNext
-            
-            if(!cardsPlayable.isEmpty()) {
-                cardsToBePlayed = cardsPlayableAnalyzer(cardsPlayable);
-                cardsToPlayNext = cardsToPlay(river,cardsToBePlayed,cardsToPlayNext);    
-                
-            } else //End if(!cardsPlayable.isEmpty())     
-            
-            /*     if Player only has special Rcards    */
-            if((cardsPlayable.isEmpty()) && !river.empty()) 
-            {
-                cardsPlayable = river.getCards();
-                cardsToBePlayed = cardsPlayableAnalyzer(cardsPlayable);
-                cardsToPlayNext = cardsToPlay(river,cardsToBePlayed,cardsToPlayNext);
-                
-            }
-            
-            CardHand playNext = new CardHand("playNext", cardsToPlayNext);        
-            for(int i = 0; i < cardsToPlayNext.size(); i++) {
-            
-            shitHead.discardPile.addCard(playNext.getCard(i));
-            }
-            System.out.println("Player "+ name +
-                    " plays "+ playNext.size() + " x " + 
-                  shitHead.discardPile.last() + " card(s).");
-            shitHead.draw();
+            CardHand playNext = playNext2CardHandBuidler(river,shitHead, 
+                    cardsToPlayNext, cardsPlayable, cardsToBePlayed);     
             return playNext;
         }// End PlayeNext2.!river.empty().
     
         /*Problem when last hole card is a tenBomb. Leads to trying 
          * to play another card when do not have any left*/      
         if(!hole.empty()) {
+            ArrayList<Card> cardToPlayNext = new ArrayList<>();
             Random rand = new Random();
             int i = rand.nextInt(hole.size());
             Card card = hole.popCard(i);
-            cardsToPlayNext.add(card);
+            cardToPlayNext.add(card);
             shitHead.discardPile.addCard(card);
             System.out.println("Player "+ name +
                     " plays HoleCard "+ card);
             shitHead.draw();
-            CardHand playNext = new CardHand("playNext", cardsToPlayNext);
+            
+            CardHand playNext = new CardHand("playNext", cardToPlayNext);
             return playNext;
         }
         else 
@@ -263,6 +204,59 @@ public class PlayerSH {
                 + shitHead.player.getName());
         return shitHead.player.playNext2(shitHead);//not sure ever needed
     }//End playNext2(SH)**********************************
+
+    /**
+     * @param shitHead: Makes available some key SH data members(discardPile) and 
+     *   methods(draw(), etc.) to the PlayerSH class.
+     * @param cardsToPlayNext
+     * @param cardsPlayable
+     * @return
+     */
+    public CardHand playNext2CardHandBuidler(CardHand hand, ShitHead shitHead, ArrayList<Card> cardsToPlayNext,
+            ArrayList<Card> cardsPlayable, ArrayList<ArrayList<Card>> cardsToBePlayed) {
+        
+        cardsPlayableNotSpcBulider(hand, cardsPlayable);
+        
+        if(!cardsPlayable.isEmpty()) {
+            cardsToBePlayed = cardsPlayableAnalyzer(cardsPlayable);
+            cardsToPlayNext = cardsToPlay(hand,cardsToBePlayed,cardsToPlayNext);    
+            
+        } else //End if(!cardsPlayable.isEmpty())     
+        
+        /*     if Player only has special Rcards    */
+        if((cardsPlayable.isEmpty()) && !hand.empty()) 
+        {
+            cardsPlayable = hand.getCards();
+            cardsToBePlayed = cardsPlayableAnalyzer(cardsPlayable);
+            cardsToPlayNext = cardsToPlay(hand,cardsToBePlayed,cardsToPlayNext);
+            
+        }
+        
+        CardHand playNext = new CardHand("playNext", cardsToPlayNext);        
+        for(Card c:cardsToPlayNext) {
+            shitHead.discardPile.addCard(c);
+        }
+            System.out.println("Player "+ name +
+                " plays "+ playNext.size() + " x " + 
+              shitHead.discardPile.last() + " card(s).");
+        shitHead.draw();
+        return playNext;
+    }
+
+    /**
+     * @param cardsPlayable
+     */
+    public void cardsPlayableNotSpcBulider(CardHand hand,ArrayList<Card> cardsPlayable) {
+        {/*    Looking for not special RCards */
+        for(int i = 0; i < hand.size(); i++) {
+            Card chkCard = hand.getCard(i);
+            
+            if(!specialCardNt7SH(chkCard)) {
+                cardsPlayable.add(chkCard);
+         }
+        }//End build River cardsPlayable PlayNext
+        }
+    }
 
     /**
      * @param hand
