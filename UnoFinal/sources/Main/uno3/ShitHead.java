@@ -329,7 +329,7 @@ public class ShitHead {
             next = tenBombInPlayNext2(next);// End while(tenBomb(next) && !isDone())  
             player = nextPlayer(player);            
         }else 
-            if(!tenBomb(next))
+            if(!tenBomb(next) && !isDone())
             {
                 discardPile.addCards(cardsToPlay);
                 

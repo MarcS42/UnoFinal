@@ -1,12 +1,7 @@
 package TestClasses;
 
 import java.util.ArrayList;
-import static Main.uno3.SpecialCardsSH.*;
-import static Main.uno3.Card.*;
-import static Main.uno3.CardHand.*;
-
 import Main.uno3.Card;
-import Main.uno3.CardDeck.*;
 
 public class TestPlayerSH {
     static ArrayList<Card> cardsPlayable = new ArrayList<>();
